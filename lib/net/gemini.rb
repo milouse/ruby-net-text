@@ -7,6 +7,8 @@ require 'uri/gemini'
 require_relative 'gemini/response'
 
 module Net
+  class GeminiError < StandardError; end
+
   class Gemini
     def initialize(host, port)
       @host = host
@@ -36,6 +38,22 @@ module Net
       r = GeminiResponse.read_new(@ssl_socket)
       r.uri = uri
       r.reading_body(@ssl_socket)
+    end
+
+    def fetch(uri, limit = 5)
+      raise GeminiError, 'Too many Gemini redirects' if limit == 0
+      r = request(uri)
+      return r unless r.status[0] == '3'
+      new_uri = URI(r.meta)
+      return r unless [URI::Generic, URI::Gemini].include? new_uri.class
+      old_url = uri.to_s
+      uri.merge!(new_uri)
+      raise GeminiError, "Redirect loop on #{uri}" if uri.to_s == old_url
+      warn "Redirect to #{uri}" if $VERBOSE
+      # Stop remaining connection, even if they should be already cut
+      # by the server
+      finish
+      fetch(uri, limit - 1)
     end
 
     def Gemini.start(host_or_uri, port = nil, &block)
