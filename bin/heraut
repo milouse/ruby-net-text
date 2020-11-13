@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+#!/usr/bin/env -S ruby -I lib
 # frozen_string_literal: true
 
 require 'net/gemini'
@@ -8,6 +8,17 @@ response = Net::Gemini.start(u.host, u.port) do |g|
   g.request(u)
 end
 puts response.body
-puts '------'
+puts "\n* Headers"
 puts "#{response.status} - #{response.meta}"
-puts response.links.inspect
+response.header.each do |k, v|
+  puts "- #{k} :: #{v}"
+end
+puts "\n* Links"
+links = response.links.map do |l|
+  if l[:label]
+    "- #{l[:label]}: #{l[:uri]}"
+  else
+    "- #{l[:uri]}"
+  end
+end
+puts links.join("\n")
