@@ -113,11 +113,12 @@ module Net
     end
 
     def parse_link(line)
-      m = line.match(/\A=>\s*([^\s]+)(?:\s*(.+))?\Z/)
+      line.strip!
+      m = line.match(/\A=>\s*([^\s]+)(?:\s*(.+))?\z/)
       return if m.nil?
       uri = URI(m[1])
       uri = @uri.merge(uri) if @uri && uri.is_a?(URI::Generic)
-      @links << { uri: uri, label: m[2] }
+      @links << { uri: uri, label: m[2]&.strip }
     end
 
     def parse_body
