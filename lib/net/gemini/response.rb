@@ -156,7 +156,7 @@ module Net
 
     def reformat_body(length)
       unless length.is_a? Integer
-        raise "Length must be Integer, #{length} given"
+        raise ArgumentError, "Length must be Integer, #{length} given"
       end
       return @body if length == 0
       new_body = []
