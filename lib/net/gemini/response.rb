@@ -109,6 +109,7 @@ module Net
           data[2] = opt[1]
         end
       end
+      data
     end
 
     def parse_preformatted_block(line, buf)
