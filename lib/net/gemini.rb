@@ -9,17 +9,8 @@ require_relative 'gemini/response'
 module Net
   class Gemini
     def initialize(host, port)
-      @socket = TCPSocket.open host, port
-      ssl_context = OpenSSL::SSL::SSLContext.new
-      # For now accept every thing without verification
-      ssl_context.set_params(verify_mode: OpenSSL::SSL::VERIFY_NONE)
-      #ssl_context.set_params(verify_mode: OpenSSL::SSL::VERIFY_PEER)
-      ssl_context.verify_hostname = true
-      ssl_context.min_version = OpenSSL::SSL::TLS1_2_VERSION
-      @ssl_socket = OpenSSL::SSL::SSLSocket.new(@socket, ssl_context)
-      @ssl_socket.sync_close = true
-      @ssl_socket.hostname = host
-      @ssl_socket.connect
+      @host = host
+      @port = port
     end
 
     def start
@@ -40,6 +31,7 @@ module Net
     end
 
     def request(uri)
+      init_sockets
       @ssl_socket.puts "#{uri.to_s}\r\n"
       r = GeminiResponse.read_new(@ssl_socket)
       r.uri = uri
@@ -54,6 +46,22 @@ module Net
         host = host_or_uri
       end
       new(host, port).start(&block)
+    end
+
+    private
+
+    def init_sockets
+      @socket = TCPSocket.new(@host, @port)
+      ssl_context = OpenSSL::SSL::SSLContext.new
+      # For now accept every thing without verification
+      ssl_context.set_params(verify_mode: OpenSSL::SSL::VERIFY_NONE)
+      #ssl_context.set_params(verify_mode: OpenSSL::SSL::VERIFY_PEER)
+      ssl_context.verify_hostname = true
+      ssl_context.min_version = OpenSSL::SSL::TLS1_2_VERSION
+      @ssl_socket = OpenSSL::SSL::SSLSocket.new(@socket, ssl_context)
+      #@ssl_socket.sync_close = true
+      @ssl_socket.hostname = @host
+      @ssl_socket.connect
     end
   end
 end
