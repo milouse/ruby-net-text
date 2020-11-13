@@ -125,7 +125,11 @@ module Net
       line.strip!
       m = line.match(/\A=>\s*([^\s]+)(?:\s*(.+))?\z/)
       return if m.nil?
-      uri = URI(m[1])
+      begin
+        uri = URI(m[1])
+      rescue URI::InvalidURIError
+        return
+      end
       uri = @uri.merge(uri) if @uri && uri.is_a?(URI::Generic)
       @links << { uri: uri, label: m[2]&.strip }
     end

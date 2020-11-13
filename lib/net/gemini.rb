@@ -44,10 +44,13 @@ module Net
       raise GeminiError, 'Too many Gemini redirects' if limit == 0
       r = request(uri)
       return r unless r.status[0] == '3'
-      new_uri = URI(r.meta)
-      return r unless [URI::Generic, URI::Gemini].include? new_uri.class
       old_url = uri.to_s
-      uri.merge!(new_uri)
+      begin
+        new_uri = URI(r.meta)
+        uri.merge!(new_uri)
+      rescue ArgumentError, URI::InvalidURIError
+        return r
+      end
       raise GeminiError, "Redirect loop on #{uri}" if uri.to_s == old_url
       warn "Redirect to #{uri}" if $VERBOSE
       # Stop remaining connection, even if they should be already cut
