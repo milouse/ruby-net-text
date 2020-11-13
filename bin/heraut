@@ -1,7 +1,9 @@
 #!/usr/bin/env -S ruby -I lib -w
 # frozen_string_literal: true
 
+require 'uri/gemini'
 require 'net/gemini'
+
 
 u = URI(ARGV[0])
 response = Net::Gemini.start(u.host, u.port) do |g|
