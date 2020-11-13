@@ -116,17 +116,7 @@ module Net
       m = line.match(/\A=>\s*([^\s]+)(?:\s*(.+))?\Z/)
       return if m.nil?
       uri = URI(m[1])
-      if @uri && uri.is_a?(URI::Generic)
-        new_uri = @uri.dup
-        if uri.path[0] == '/'
-          new_uri.path = uri.path
-        else
-          new_uri.path += uri.path
-        end
-        new_uri.query = uri.query
-        new_uri.fragment = uri.fragment
-        uri = new_uri
-      end
+      uri = @uri.merge(uri) if @uri && uri.is_a?(URI::Generic)
       @links << { uri: uri, label: m[2] }
     end
 
