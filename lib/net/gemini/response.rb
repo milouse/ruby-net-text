@@ -12,21 +12,18 @@ module Net
   # [1] https://gemini.circumlunar.space/docs/specification.html
   #
   class GeminiResponse
-    # The Gemini <STATUS> string. For example, '20'.
+    # The Gemini response <STATUS> string.
+    #
+    # For example, '20'.
     attr_reader :status
 
-    # The Gemini <META> message sent by the server. For example,
-    #   'text/gemini'.
+    # The Gemini response <META> message sent by the server as a string.
+    #
+    # For example, 'text/gemini'.
     attr_reader :meta
 
-    # The MIME type of the body content as a string, if available.
-    attr_reader :mimetype
-
-    # The charset of the body content as a string, if available.
-    attr_reader :charset
-
-    # The locale of the body content as a string, if available.
-    attr_reader :lang
+    # The Gemini response <META> as a qualified Hash.
+    attr_reader :header
 
     # The URI related to this response as an URI object.
     attr_accessor :uri
@@ -40,8 +37,8 @@ module Net
 
     def initialize(status = nil, meta = nil)
       @status = status
-      @mimetype, @lang, @charset = parse_meta(meta)
       @meta = meta
+      @header = parse_meta
       @uri = nil
       @body = nil
       @links = []
@@ -58,19 +55,9 @@ module Net
         raw_body << line
       end
       encode_body(raw_body.join)
-      return self unless @mimetype == 'text/gemini'
+      return self unless @header[:mimetype] == 'text/gemini'
       parse_body
       self
-    end
-
-    def header
-      {
-        status: @status,
-        meta: @meta,
-        mimetype: @mimetype,
-        lang: @lang,
-        charset: @charset
-      }
     end
 
     class << self
@@ -94,22 +81,25 @@ module Net
 
     private
 
-    def parse_meta(meta)
-      data = [nil, nil, 'utf-8']
-      return data unless body_permitted?
+    def parse_meta
+      header = {
+        status: @status,
+        meta: @meta,
+        mimetype: nil,
+        lang: nil,
+        charset: 'utf-8'
+      }
+      return header unless body_permitted?
       raw_meta = meta.split(';').map(&:strip)
-      data[0] = raw_meta.shift
-      return data unless raw_meta.any?
+      header[:mimetype] = raw_meta.shift
+      return header unless raw_meta.any?
       raw_meta.each do |m|
         opt = m.split('=')
-        case opt[0].downcase
-        when 'lang'
-          data[1] = opt[1].downcase
-        when 'charset'
-          data[2] = opt[1].downcase
-        end
+        key = opt[0].downcase.to_sym
+        next unless [:lang, :charset, :format].include? key
+        header[key] = opt[1].downcase
       end
-      data
+      header
     end
 
     def parse_preformatted_block(line, buf)
@@ -144,10 +134,10 @@ module Net
     end
 
     def encode_body(body)
-      if @charset && @charset != 'utf-8'
+      if @header[:charset] && @header[:charset] != 'utf-8'
         # If body use another charset than utf-8, we need first to
         # declare the raw byte string as using this chasret
-        body.force_encoding(@charset)
+        body.force_encoding(@header[:charset])
         # Then we can safely try to convert it to utf-8
         body.encode!('utf-8')
       else
