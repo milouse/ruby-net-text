@@ -28,9 +28,6 @@ module Net
     # The URI related to this response as an URI object.
     attr_accessor :uri
 
-    # The Gemini response main content as a string.
-    attr_accessor :body
-
     # All links found on a Gemini response of MIME text/gemini, as an
     #   array.
     attr_reader :links
@@ -59,6 +56,10 @@ module Net
       return self unless @header[:mimetype] == 'text/gemini'
       parse_body
       self
+    end
+
+    def body=(body)
+      @body = body
     end
 
     def body(flowed: nil)
