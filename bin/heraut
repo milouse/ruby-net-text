@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'net/gemini'
+
+u = URI(ARGV[0])
+response = Net::Gemini.start(u.host, u.port) do |g|
+  g.request(u)
+end
+puts response.body
+puts '------'
+puts "#{response.status} - #{response.meta}"
+puts response.links.inspect
