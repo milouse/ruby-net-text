@@ -63,6 +63,16 @@ module Net
       self
     end
 
+    def header
+      {
+        status: @status,
+        meta: @meta,
+        mimetype: @mimetype,
+        lang: @lang,
+        charset: @charset
+      }
+    end
+
     class << self
       def read_new(sock)   #:nodoc: internal use only
         code, msg = read_status_line(sock)
