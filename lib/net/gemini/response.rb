@@ -61,6 +61,12 @@ module Net
       self
     end
 
+    def body(flowed: nil)
+      return '' if @body.nil? # Maybe not ready?
+      return @body if flowed.nil? || @header[:format] == 'fixed'
+      reformat_body(flowed)
+    end
+
     class << self
       def read_new(sock)   #:nodoc: internal use only
         code, msg = read_status_line(sock)
@@ -145,6 +151,33 @@ module Net
       end
       # Just declare that the body uses utf-8
       body.force_encoding('utf-8')
+    end
+
+    def reformat_body(length)
+      unless length.is_a? Integer
+        raise "Length must be Integer, #{length} given"
+      end
+      return @body if length == 0
+      new_body = []
+      mono_block_open = false
+      @body.each_line(chomp: true) do |line|
+        if line.start_with?('```')
+          mono_block_open = !mono_block_open
+        elsif mono_block_open || line.start_with?('=>') || line.length < length
+          new_body << line
+        else
+          prefix = ''
+          m = line.match(/\A([*#>]+ )/)
+          prefix = ' ' * m[1].length if m
+          while line.length > length
+            last_space = line[0...length].rindex(' ')
+            new_body << line[0...last_space]
+            line = prefix + line[last_space + 1..]
+          end
+          new_body << line
+        end
+      end
+      new_body.join("\n")
     end
   end
 end
