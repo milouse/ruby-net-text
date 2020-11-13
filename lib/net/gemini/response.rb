@@ -57,7 +57,7 @@ module Net
       while line = sock.gets
         raw_body << line
       end
-      @body = raw_body.join
+      encode_body(raw_body.join)
       return self unless @mimetype == 'text/gemini'
       parse_body
       self
@@ -95,7 +95,7 @@ module Net
     private
 
     def parse_meta(meta)
-      data = [nil, nil, nil]
+      data = [nil, nil, 'utf-8']
       return data unless body_permitted?
       raw_meta = meta.split(';').map(&:strip)
       data[0] = raw_meta.shift
@@ -141,6 +141,20 @@ module Net
           parse_link(line)
         end
       end
+    end
+
+    def encode_body(body)
+      if @charset && @charset != 'utf-8'
+        # If body use another charset than utf-8, we need first to
+        # declare the raw byte string as using this chasret
+        body.force_encoding(@charset)
+        # Then we can safely try to convert it to utf-8
+        body.encode!('utf-8')
+      else
+        # Just declare that the body uses utf-8
+        body.force_encoding('utf-8')
+      end
+      @body = body
     end
   end
 end
