@@ -102,11 +102,11 @@ module Net
       return data unless raw_meta.any?
       raw_meta.each do |m|
         opt = m.split('=')
-        case opt[0]
+        case opt[0].downcase
         when 'lang'
-          data[1] = opt[1]
+          data[1] = opt[1].downcase
         when 'charset'
-          data[2] = opt[1]
+          data[2] = opt[1].downcase
         end
       end
       data
