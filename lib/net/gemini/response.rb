@@ -50,11 +50,12 @@ module Net
     end
 
     def reading_body(sock)
+      return self unless body_permitted?
       raw_body = []
       while line = sock.gets
         raw_body << line
       end
-      encode_body(raw_body.join)
+      @body = encode_body(raw_body.join)
       return self unless @header[:mimetype] == 'text/gemini'
       parse_body
       self
@@ -134,17 +135,16 @@ module Net
     end
 
     def encode_body(body)
+      return body unless @header[:mimetype].start_with?('text/')
       if @header[:charset] && @header[:charset] != 'utf-8'
         # If body use another charset than utf-8, we need first to
         # declare the raw byte string as using this chasret
         body.force_encoding(@header[:charset])
         # Then we can safely try to convert it to utf-8
-        body.encode!('utf-8')
-      else
-        # Just declare that the body uses utf-8
-        body.force_encoding('utf-8')
+        return body.encode('utf-8')
       end
-      @body = body
+      # Just declare that the body uses utf-8
+      body.force_encoding('utf-8')
     end
   end
 end
