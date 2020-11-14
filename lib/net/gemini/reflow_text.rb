@@ -22,6 +22,7 @@ module Gemini
     end
 
     def reflow_text_line(line, mono_block_open, length)
+      line.strip!
       if mono_block_open || line.start_with?('=>') || line.length < length
         return [line]
       end
@@ -53,7 +54,7 @@ module Gemini
         end
         new_body += reflow_text_line(line, mono_block_open, length)
       end
-      new_body.join
+      new_body.join("\n")
     end
   end
 end
