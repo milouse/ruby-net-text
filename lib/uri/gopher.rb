@@ -5,9 +5,9 @@ require 'uri'
 module URI # :nodoc:
   #
   # The syntax of Gopher URIs is defined in the Gopher URI Scheme
-  #   specification[1].
+  # specification.
   #
-  # [1] https://www.rfc-editor.org/rfc/rfc4266.html
+  # @see https://www.rfc-editor.org/rfc/rfc4266.html
   #
   class Gopher < HTTP
     # A Default port of 70 for URI::Gopher.

@@ -5,7 +5,9 @@ require 'uri'
 module URI # :nodoc:
   #
   # The syntax of Finger URIs is defined in the Finger specification,
-  #   section 2.3: https://tools.ietf.org/html/rfc1288#section-2.3
+  # section 2.3.
+  #
+  # @see https://tools.ietf.org/html/rfc1288#section-2.3
   #
   class Finger < HTTP
     # A Default port of 79 for URI::Finger.

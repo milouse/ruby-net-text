@@ -14,11 +14,10 @@ module Net
   # == A Gemini client API for Ruby.
   #
   # Net::Gemini provides a rich library which can be used to build
-  # Gemini user-agents.  For more details about Gemini see
-  # https://gemini.circumlunar.space/docs/specification.html
+  # Gemini user-agents.
+  # @see https://gemini.circumlunar.space/docs/specification.html
   #
-  # Net::Gemini is designed to work closely with URI.  URI::Gemini#host
-  # and URI::Gemini#port are designed to work with Net::Gemini.
+  # Net::Gemini is designed to work closely with URI.
   #
   # == Simple Examples
   #
@@ -31,12 +30,6 @@ module Net
   #
   # The Net::Gemini methods in the following section do not persist
   # connections.
-  #
-  # === GET
-  #
-  # Not yet implemented.
-  #
-  #   Net::Gemini.get('example.com', '/index.html') # => String
   #
   # === GET by URI
   #
@@ -54,25 +47,20 @@ module Net
   #
   # === Response Data
   #
-  #   u = URI('gemini://exemple.com/home')
-  #   res = Net::Gemini.start(u.host, u.port) do |g|
-  #     g.request(u)
-  #   end
+  #   res = Net::Gemini.get_response(URI('gemini://exemple.com/home'))
   #
   #   # Status
   #   puts res.status # => '20'
   #   puts res.meta   # => 'text/gemini; charset=UTF-8; lang=en'
   #
   #   # Headers
-  #   puts res.header.inspect # => { status: '20',
-  #                                  meta: 'text/gemini; charset=UTF-8',
-  #                                  mimetype: 'text/gemini',
-  #                                  lang: 'en',
-  #                                  charset: 'utf-8',
-  #                                  format: nil }
+  #   puts res.header.inspect
+  #   # => { status: '20', meta: 'text/gemini; charset=UTF-8',
+  #           mimetype: 'text/gemini', lang: 'en',
+  #           charset: 'utf-8', format: nil }
   #
   # The lang, charset and format headers will only be provided in case
-  # of text/* mimetype, and only if body for 2* status codes.
+  # of `text/*` mimetype, and only if body for 2* status codes.
   #
   #   # Body
   #   puts res.body if res.body_permitted?
@@ -80,9 +68,9 @@ module Net
   #
   # === Following Redirection
   #
-  # The Net::Gemini#fetch methods, contrary to the Net::Gemini#request
-  # one will try to automatically resolves redirection, leading you to
-  # the final destination.
+  # The {#fetch} method, contrary to the {#request} one will try to
+  # automatically resolves redirection, leading you to the final
+  # destination.
   #
   #   u = URI('gemini://exemple.com/redirect')
   #   res = Net::Gemini.start(u.host, u.port) do |g|

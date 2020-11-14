@@ -4,10 +4,10 @@ require 'uri'
 
 module URI # :nodoc:
   #
-  # The syntax of Gemini URIs is defined in the Gemini specification[1],
-  #   section 1.2.
+  # The syntax of Gemini URIs is defined in the Gemini specification,
+  # section 1.2.
   #
-  # [1] https://gemini.circumlunar.space/docs/specification.html
+  # @see https://gemini.circumlunar.space/docs/specification.html
   #
   class Gemini < HTTP
     # A Default port of 1965 for URI::Gemini.
