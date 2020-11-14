@@ -158,6 +158,32 @@ module Net
       body.force_encoding('utf-8')
     end
 
+    def reflow_line_cut_index(line)
+      possible_cut = [
+        line.rindex(' ') || 0,
+        line.rindex('­') || 0,
+        line.rindex('-') || 0
+      ].sort
+      possible_cut.reverse!
+      possible_cut[0]
+    end
+
+    def reflow_text_line(line, length)
+      return [line] if line.length < length
+      output = []
+      prefix = ''
+      m = line.match(/\A([*#>]+ )/)
+      prefix = ' ' * m[1].length if m
+      while line.length > length
+        cut_line = line[0...length]
+        cut_index = reflow_line_cut_index(cut_line)
+        break if cut_index.zero?  # Outch… better do nothing for now
+        output << line[0...cut_index]
+        line = prefix + line[cut_index + 1..]
+      end
+      output << line
+    end
+
     def reformat_body(length)
       unless length.is_a? Integer
         raise ArgumentError, "Length must be Integer, #{length} given"
@@ -168,18 +194,10 @@ module Net
       @body.each_line(chomp: true) do |line|
         if line.start_with?('```')
           mono_block_open = !mono_block_open
-        elsif mono_block_open || line.start_with?('=>') || line.length < length
+        elsif mono_block_open || line.start_with?('=>')
           new_body << line
         else
-          prefix = ''
-          m = line.match(/\A([*#>]+ )/)
-          prefix = ' ' * m[1].length if m
-          while line.length > length
-            last_space = line[0...length].rindex(' ')
-            new_body << line[0...last_space]
-            line = prefix + line[last_space + 1..]
-          end
-          new_body << line
+          new_body += reflow_text_line(line, length)
         end
       end
       new_body.join("\n")
