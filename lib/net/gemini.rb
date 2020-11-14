@@ -40,14 +40,10 @@ module Net
   #
   # === GET by URI
   #
-  # Not yet implemented
-  #
   #   uri = URI('gemini://example.com/index.html?count=10')
   #   Net::Gemini.get(uri) # => String
   #
   # === GET with Dynamic Parameters
-  #
-  # Not yet implemented
   #
   #   uri = URI('gemini://example.com/index.html')
   #   params = { :limit => 10, :page => 3 }
@@ -108,29 +104,16 @@ module Net
       @port = port
     end
 
-    def start
-      if block_given?
-        begin
-          return yield(self)
-        ensure
-          finish
-        end
-      end
-      self
-    end
-
-    # Closes the SSL and TCP connections.
-    def finish
-      @ssl_socket.close
-      @socket.close
-    end
-
     def request(uri)
       init_sockets
       @ssl_socket.puts "#{uri}\r\n"
       r = GeminiResponse.read_new(@ssl_socket)
       r.uri = uri
       r.reading_body(@ssl_socket)
+    ensure
+      # Stop remaining connection, even if they should be already cut
+      # by the server
+      finish
     end
 
     def fetch(uri, limit = 5)
@@ -146,20 +129,29 @@ module Net
       end
       raise GeminiError, "Redirect loop on #{uri}" if uri.to_s == old_url
       warn "Redirect to #{uri}" if $VERBOSE
-      # Stop remaining connection, even if they should be already cut
-      # by the server
-      finish
       fetch(uri, limit - 1)
     end
 
-    def self.start(host_or_uri, port = nil, &block)
-      if host_or_uri.is_a? URI::Gemini
-        host = host_or_uri.host
-        port = host_or_uri.port
-      else
-        host = host_or_uri
+    class << self
+      def start(host_or_uri, port = nil)
+        if host_or_uri.is_a? URI::Gemini
+          host = host_or_uri.host
+          port = host_or_uri.port
+        else
+          host = host_or_uri
+        end
+        gem = new(host, port)
+        return yield(gem) if block_given?
+        gem
       end
-      new(host, port).start(&block)
+
+      def get_response(uri)
+        start(uri.host, uri.port) { |gem| gem.fetch(uri) }
+      end
+
+      def get(uri)
+        get_response(uri).body
+      end
     end
 
     private
@@ -176,6 +168,12 @@ module Net
       # @ssl_socket.sync_close = true
       @ssl_socket.hostname = @host
       @ssl_socket.connect
+    end
+
+    # Closes the SSL and TCP connections.
+    def finish
+      @ssl_socket.close
+      @socket.close
     end
   end
 end

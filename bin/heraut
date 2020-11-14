@@ -4,9 +4,7 @@
 require 'net/gemini'
 
 u = URI(ARGV[0])
-response = Net::Gemini.start(u.host, u.port) do |g|
-  g.fetch(u)
-end
+response = Net::Gemini.get_response u
 puts response.body(flowed: 78)
 puts "\n* Headers"
 puts "#{response.status} - #{response.meta}"
