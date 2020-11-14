@@ -21,7 +21,7 @@ module Gemini
     end
 
     def parse_preformatted_block(line, buf)
-      cur_block = { meta: line[3..].strip, content: '' }
+      cur_block = { meta: line[3..].chomp, content: '' }
       while (line = buf.gets)
         if line.start_with?('```')
           @preformatted_blocks << cur_block
@@ -32,8 +32,7 @@ module Gemini
     end
 
     def parse_link(line)
-      line.strip!
-      m = line.match(/\A=>\s*([^\s]+)(?:\s*(.+))?\z/)
+      m = line.strip.match(/\A=>\s*([^\s]+)(?:\s*(.+))?\z/)
       return if m.nil?
       begin
         uri = URI(m[1])
@@ -41,7 +40,7 @@ module Gemini
         return
       end
       uri = @uri.merge(uri) if @uri && uri.is_a?(URI::Generic)
-      @links << { uri: uri, label: m[2]&.strip }
+      @links << { uri: uri, label: m[2]&.chomp }
     end
 
     def parse_body
