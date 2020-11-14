@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require './lib/fronde/version'
-
 Gem::Specification.new do |s|
   s.name        = 'ruby-net-text'
   s.version     = '0.0.1'
@@ -16,7 +14,7 @@ Gem::Specification.new do |s|
                    # Others
                    'LICENSE']
   s.homepage    = 'https://git.umaneti.net/ruby-net-text/'
-  s.license     = ['MIT']
+  s.license     = 'MIT'
 
-  s.required_ruby_version = '>= 2.6'
+  s.required_ruby_version = '>= 2.7'
 end

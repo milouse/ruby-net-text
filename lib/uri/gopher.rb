@@ -2,7 +2,7 @@
 
 require 'uri'
 
-module URI
+module URI # :nodoc:
   #
   # The syntax of Gopher URIs is defined in the Gopher URI Scheme
   #   specification[1].
@@ -14,11 +14,7 @@ module URI
     DEFAULT_PORT = 70
 
     # An Array of the available components for URI::Gopher.
-    COMPONENT = %i[
-      scheme
-      host port
-      path
-    ].freeze
+    COMPONENT = [:scheme, :host, :port, :path].freeze
   end
 
   @@schemes['GOPHER'] = Gopher

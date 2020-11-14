@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
+require 'English'
 require 'stringio'
+
+require_relative 'gmi_parser'
+require_relative 'reflow_text'
 
 module Net
   class GeminiBadResponse < StandardError; end
@@ -24,6 +28,9 @@ module Net
 
     # The Gemini response <META> as a qualified Hash.
     attr_reader :header
+
+    # The Gemini response main content as a string.
+    attr_writer :body
 
     # The URI related to this response as an URI object.
     attr_accessor :uri
@@ -49,17 +56,13 @@ module Net
     def reading_body(sock)
       return self unless body_permitted?
       raw_body = []
-      while line = sock.gets
+      while (line = sock.gets)
         raw_body << line
       end
       @body = encode_body(raw_body.join)
       return self unless @header[:mimetype] == 'text/gemini'
       parse_body
       self
-    end
-
-    def body=(body)
-      @body = body
     end
 
     def body(flowed: nil)
@@ -69,7 +72,7 @@ module Net
     end
 
     class << self
-      def read_new(sock)   #:nodoc: internal use only
+      def read_new(sock)
         code, msg = read_status_line(sock)
         new(code, msg)
       end
@@ -80,7 +83,7 @@ module Net
         # Read up to 1027 bytes:
         # - 3 bytes for code and space separator
         # - 1024 bytes max for the message
-        str = sock.gets($/, 1027)
+        str = sock.gets($INPUT_RECORD_SEPARATOR, 1027)
         m = /\A([1-6]\d) (.*)\r\n\z/.match(str)
         raise GeminiBadResponse, "wrong status line: #{str.dump}" if m.nil?
         m.captures
@@ -88,62 +91,6 @@ module Net
     end
 
     private
-
-    def parse_meta
-      header = {
-        status: @status,
-        meta: @meta,
-        mimetype: nil,
-        lang: nil,
-        charset: 'utf-8'
-      }
-      return header unless body_permitted?
-      raw_meta = meta.split(';').map(&:strip)
-      header[:mimetype] = raw_meta.shift
-      return header unless raw_meta.any?
-      raw_meta.each do |m|
-        opt = m.split('=')
-        key = opt[0].downcase.to_sym
-        next unless [:lang, :charset, :format].include? key
-        header[key] = opt[1].downcase
-      end
-      header
-    end
-
-    def parse_preformatted_block(line, buf)
-      cur_block = { meta: line[3..].strip, content: '' }
-      while line = buf.gets
-        if line.start_with?('```')
-          @preformatted_blocks << cur_block
-          break
-        end
-        cur_block[:content] += line
-      end
-    end
-
-    def parse_link(line)
-      line.strip!
-      m = line.match(/\A=>\s*([^\s]+)(?:\s*(.+))?\z/)
-      return if m.nil?
-      begin
-        uri = URI(m[1])
-      rescue URI::InvalidURIError
-        return
-      end
-      uri = @uri.merge(uri) if @uri && uri.is_a?(URI::Generic)
-      @links << { uri: uri, label: m[2]&.strip }
-    end
-
-    def parse_body
-      buf = StringIO.new(@body)
-      while line = buf.gets
-        if line.start_with?('```')
-          parse_preformatted_block(line, buf)
-        elsif line.start_with?('=>')
-          parse_link(line)
-        end
-      end
-    end
 
     def encode_body(body)
       return body unless @header[:mimetype].start_with?('text/')
@@ -158,49 +105,7 @@ module Net
       body.force_encoding('utf-8')
     end
 
-    def reflow_line_cut_index(line)
-      possible_cut = [
-        line.rindex(' ') || 0,
-        line.rindex('­') || 0,
-        line.rindex('-') || 0
-      ].sort
-      possible_cut.reverse!
-      possible_cut[0]
-    end
-
-    def reflow_text_line(line, length)
-      return [line] if line.length < length
-      output = []
-      prefix = ''
-      m = line.match(/\A([*#>]+ )/)
-      prefix = ' ' * m[1].length if m
-      while line.length > length
-        cut_line = line[0...length]
-        cut_index = reflow_line_cut_index(cut_line)
-        break if cut_index.zero?  # Outch… better do nothing for now
-        output << line[0...cut_index]
-        line = prefix + line[cut_index + 1..]
-      end
-      output << line
-    end
-
-    def reformat_body(length)
-      unless length.is_a? Integer
-        raise ArgumentError, "Length must be Integer, #{length} given"
-      end
-      return @body if length == 0
-      new_body = []
-      mono_block_open = false
-      @body.each_line(chomp: true) do |line|
-        if line.start_with?('```')
-          mono_block_open = !mono_block_open
-        elsif mono_block_open || line.start_with?('=>')
-          new_body << line
-        else
-          new_body += reflow_text_line(line, length)
-        end
-      end
-      new_body.join("\n")
-    end
+    include ::Gemini::GmiParser
+    include ::Gemini::ReflowText
   end
 end
