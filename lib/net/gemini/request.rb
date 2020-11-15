@@ -17,12 +17,14 @@ module Net
     attr_reader :uri
 
     def initialize(uri_or_str)
-      if uri_or_str.is_a? URI::Gemini
-        @uri = uri_or_str
-      elsif uri_or_str.length > 1024
-        raise GeminiBadRequest, "Request too long: #{uri_or_str.dump}"
-      else
-        @uri = URI(uri_or_str)
+      # In any case, make some sanity check over this uri-like think
+      url = uri_or_str.to_s
+      if url.length > 1024
+        raise GeminiBadRequest, "Request too long: #{url.dump}"
+      end
+      @uri = URI(url)
+      unless uri.is_a? URI::Gemini
+        raise GeminiBadRequest, "Not a Gemini URI: #{url.dump}"
       end
     end
 
