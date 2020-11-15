@@ -73,13 +73,6 @@ module Net
 
     class << self
       def read_new(sock)
-        code, msg = read_status_line(sock)
-        new(code, msg)
-      end
-
-      private
-
-      def read_status_line(sock)
         # Read up to 1029 bytes:
         # - 3 bytes for code and space separator
         # - 1024 bytes max for the message
@@ -87,7 +80,7 @@ module Net
         str = sock.gets($INPUT_RECORD_SEPARATOR, 1029)
         m = /\A([1-6]\d) (.*)\r\n\z/.match(str)
         raise GeminiBadResponse, "wrong status line: #{str.dump}" if m.nil?
-        m.captures
+        new(*m.captures)
       end
     end
 
