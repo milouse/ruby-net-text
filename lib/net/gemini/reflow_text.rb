@@ -17,8 +17,10 @@ module Gemini
 
     def reflow_line_prefix(line)
       m = line.match(/\A([*#>]+ )/)
-      return ' ' * m[1].length if m
-      ''
+      return '' unless m
+      # Each quote line should begin with the quote mark
+      return m[1] if m[1].start_with?('>')
+      ' ' * m[1].length
     end
 
     def reflow_text_line(line, mono_block_open, length)
