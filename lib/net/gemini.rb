@@ -181,8 +181,8 @@ module Net
     end
 
     def init_sockets
-      @socket = TCPSocket.new(@host, @port)
-      @ssl_socket = OpenSSL::SSL::SSLSocket.new(@socket, ssl_context)
+      socket = TCPSocket.new(@host, @port)
+      @ssl_socket = OpenSSL::SSL::SSLSocket.new(socket, ssl_context)
       # Close underlying TCP socket with SSL socket
       @ssl_socket.sync_close = true
       @ssl_socket.hostname = @host # SNI
