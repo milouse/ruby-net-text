@@ -11,9 +11,9 @@ module Net
 
   #
   # The syntax of Gemini Responses are defined in the Gemini
-  #   specification[1], section 3.
+  # specification, section 3.
   #
-  # [1] https://gemini.circumlunar.space/docs/specification.html
+  # @see https://gemini.circumlunar.space/docs/specification.html
   #
   class GeminiResponse
     # The Gemini response <STATUS> string.
