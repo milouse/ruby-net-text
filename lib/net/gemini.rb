@@ -114,14 +114,11 @@ module Net
       raise GeminiError, 'Too many Gemini redirects' if limit.zero?
       r = request(uri)
       return r unless r.status[0] == '3'
-      old_url = uri.to_s
       begin
-        new_uri = URI(r.meta)
-        uri.merge!(new_uri)
+        uri = handle_redirect(r)
       rescue ArgumentError, URI::InvalidURIError
         return r
       end
-      raise GeminiError, "Redirect loop on #{uri}" if uri.to_s == old_url
       warn "Redirect to #{uri}" if $VERBOSE
       fetch(uri, limit - 1)
     end
@@ -149,6 +146,17 @@ module Net
     end
 
     private
+
+    def handle_redirect(response)
+      uri = response.uri
+      old_url = uri.to_s
+      new_uri = URI(response.meta)
+      uri.merge!(new_uri)
+      raise GeminiError, "Redirect loop on #{uri}" if uri.to_s == old_url
+      @host = uri.host
+      @port = uri.port
+      uri
+    end
 
     def ssl_check_existing(new_cert, cert_file)
       raw = File.read cert_file
