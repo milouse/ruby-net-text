@@ -6,7 +6,8 @@ Gem::Specification.new do |s|
   s.summary     = 'Gemini, Gopher, and Finger support for Net::* and URI::*'
   s.authors     = ['Étienne Deparis']
   s.email       = 'etienne@depar.is'
-  s.files       = ['lib/net/gemini/response.rb',
+  s.files       = ['lib/net/gemini/request.rb',
+                   'lib/net/gemini/response.rb',
                    'lib/net/gemini.rb',
                    'lib/uri/finger.rb',
                    'lib/uri/gemini.rb',

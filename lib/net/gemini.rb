@@ -7,6 +7,7 @@ require 'openssl'
 require 'fileutils'
 
 require 'uri/gemini'
+require_relative 'gemini/request'
 require_relative 'gemini/response'
 
 module Net
@@ -98,10 +99,11 @@ module Net
 
     def request(uri)
       init_sockets
-      @ssl_socket.puts "#{uri}\r\n"
-      r = GeminiResponse.read_new(@ssl_socket)
-      r.uri = uri
-      r.reading_body(@ssl_socket)
+      req = GeminiRequest.new uri
+      req.write @ssl_socket
+      res = GeminiResponse.read_new(@ssl_socket)
+      res.uri = uri
+      res.reading_body(@ssl_socket)
     ensure
       # Stop remaining connection, even if they should be already cut
       # by the server
