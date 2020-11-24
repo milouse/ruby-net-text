@@ -36,21 +36,20 @@ module Net
   #
   # === GET by URI
   #
-  #   uri = URI('gemini://example.com/index.html?count=10')
+  #   uri = URI('gemini://gemini.circumlunar.space/')
   #   Net::Gemini.get(uri) # => String
   #
   # === GET with Dynamic Parameters
   #
-  #   uri = URI('gemini://example.com/index.html')
-  #   params = { :limit => 10, :page => 3 }
-  #   uri.query = URI.encode_www_form(params)
+  #   uri = URI('gemini://gus.guru/search')
+  #   uri.query = URI.encode_www_form('test')
   #
   #   res = Net::Gemini.get_response(uri)
   #   puts res.body if res.body_permitted?
   #
   # === Response Data
   #
-  #   res = Net::Gemini.get_response(URI('gemini://exemple.com/home'))
+  #   res = Net::Gemini.get_response(URI('gemini://gemini.circumlunar.space/'))
   #
   #   # Status
   #   puts res.status # => '20'
