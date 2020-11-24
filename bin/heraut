@@ -3,6 +3,7 @@
 
 require 'net/finger'
 require 'net/gemini'
+require 'net/gopher'
 
 u = URI(ARGV[0])
 
@@ -24,6 +25,8 @@ when 'gemini'
     end
   end
   puts links.join("\n")
+when 'gopher'
+  puts Net::Gopher.get_response u
 when 'finger'
   puts Net::Finger.get u
 end
