@@ -104,6 +104,12 @@ module Net
       res = GeminiResponse.read_new(@ssl_socket)
       res.uri = uri
       res.reading_body(@ssl_socket)
+    rescue OpenSSL::SSL::SSLError => e
+      msg = format(
+        'SSLError: %<cause>s',
+        cause: e.message.sub(/.*state=error: (.+)\Z/, '\1')
+      )
+      GeminiResponse.new('59', msg)
     ensure
       # Stop remaining connection, even if they should be already cut
       # by the server
