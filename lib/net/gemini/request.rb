@@ -23,9 +23,8 @@ module Net
         raise GeminiBadRequest, "Request too long: #{url.dump}"
       end
       @uri = URI(url)
-      unless uri.is_a? URI::Gemini
-        raise GeminiBadRequest, "Not a Gemini URI: #{url.dump}"
-      end
+      return if uri.is_a? URI::Gemini
+      raise GeminiBadRequest, "Not a Gemini URI: #{url.dump}"
     end
 
     def path
