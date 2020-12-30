@@ -42,7 +42,7 @@ module Net
         # - 2 bytes for <CR><LF>
         str = sock.gets($INPUT_RECORD_SEPARATOR, 1026)
         m = /\A(.*)\r\n\z/.match(str)
-        raise GeminiBadRequest, "Malformed request: #{str.dump}" if m.nil?
+        raise GeminiBadRequest, "Malformed request: #{str&.dump}" if m.nil?
         new(m[1])
       end
     end
