@@ -15,9 +15,8 @@ module Gemini
     end
 
     def ssl_verify_cb(cert)
-      domain = cert.subject.to_s.sub(/^\/CN=/, '')
-      return false if domain != @host
-      cert_file = File.expand_path("#{@certs_path}/#{domain}.pem")
+      return false unless OpenSSL::SSL.verify_certificate_identity(cert, @host)
+      cert_file = File.expand_path("#{@certs_path}/#{@host}.pem")
       return ssl_check_existing(cert, cert_file) if File.exist?(cert_file)
       FileUtils.mkdir_p(File.expand_path(@certs_path))
       File.open(cert_file, 'wb') { |f| f.print cert.to_pem }
