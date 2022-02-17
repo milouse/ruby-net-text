@@ -20,3 +20,7 @@ links = response.links.map do |l|
   end
 end
 puts links.join("\n")
+
+# Local Variables:
+# mode: ruby
+# End:
