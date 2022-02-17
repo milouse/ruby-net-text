@@ -16,8 +16,8 @@ module Net
 
   # == A Gemini client API for Ruby.
   #
-  # Net::Gemini provides a rich library which can be used to build
-  # Gemini user-agents.
+  # Net::Gemini provides a library which can be used to build Gemini
+  # user-agents.
   # @see https://gemini.circumlunar.space/docs/specification.html
   #
   # Net::Gemini is designed to work closely with URI.
