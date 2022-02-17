@@ -1,25 +1,32 @@
 #!/usr/bin/env -S ruby -I lib -w
 # frozen_string_literal: true
 
+require 'net/finger'
 require 'net/gemini'
 
 u = URI(ARGV[0])
-response = Net::Gemini.get_response u
-puts response.body(flowed: 78)
-puts "\n* Headers"
-puts "#{response.status} - #{response.meta}"
-response.header.each do |k, v|
-  puts "- #{k} :: #{v}"
-end
-puts "\n* Links"
-links = response.links.map do |l|
-  if l[:label]
-    "- #{l[:label]}: #{l[:uri]}"
-  else
-    "- #{l[:uri]}"
+
+case u.scheme
+when 'gemini'
+  response = Net::Gemini.get_response u
+  puts response.body(flowed: 78)
+  puts "\n* Headers"
+  puts "#{response.status} - #{response.meta}"
+  response.header.each do |k, v|
+    puts "- #{k} :: #{v}"
   end
+  puts "\n* Links"
+  links = response.links.map do |l|
+    if l[:label]
+      "- #{l[:label]}: #{l[:uri]}"
+    else
+      "- #{l[:uri]}"
+    end
+  end
+  puts links.join("\n")
+when 'finger'
+  puts Net::Finger.get u
 end
-puts links.join("\n")
 
 # Local Variables:
 # mode: ruby
