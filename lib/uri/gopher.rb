@@ -34,5 +34,10 @@ module URI # :nodoc:
     end
   end
 
-  @@schemes['GOPHER'] = Gopher
+  if respond_to? :register_scheme
+    # Introduced somewhere in ruby 3.0.x
+    register_scheme 'GOPHER', Gopher
+  else
+    @@schemes['GOPHER'] = Gopher
+  end
 end
