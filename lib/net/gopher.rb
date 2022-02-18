@@ -1,11 +1,7 @@
 # frozen_string_literal: true
 
-# This file is derived from "net/http.rb".
-
-require 'socket'
-require 'fileutils'
-
-require 'uri/gopher'
+require_relative '../uri/gopher'
+require_relative 'generic'
 
 module Net
   # == A Gopher client API for Ruby.
@@ -33,33 +29,11 @@ module Net
   #   Net::Gopher.get(uri) # => String
   #
   class Gopher
-    class << self
-      def get(string_or_uri)
-        case string_or_uri
-        when URI::Gopher
-          uri = string_or_uri
-        when String
-          uri = URI(string_or_uri)
-        else
-          raise ArgumentError, 'Not a String or an URI::Gopher'
-        end
-        request uri
-      end
+    extend TextGeneric
 
-      private
-
-      def request(uri)
-        sock = TCPSocket.new(uri.host, uri.port)
-        unless uri.is_a? URI::Gopher
-          raise ArgumentError, 'uri is not an URI::Gopher'
-        end
-        sock.puts "#{uri.selector}\r\n"
-        sock.read
-      ensure
-        # Stop remaining connection, even if they should be already cut
-        # by the server
-        sock&.close
-      end
+    def self.get(string_or_uri)
+      uri = build_uri string_or_uri, URI::Gopher
+      request uri, "#{uri.selector}\r\n"
     end
   end
 end

@@ -1,10 +1,7 @@
 # frozen_string_literal: true
 
-# This file is derived from "net/http.rb".
-
-require 'socket'
-
 require_relative '../uri/finger'
+require_relative 'generic'
 
 module Net
   # == A Finger client API for Ruby.
@@ -32,33 +29,11 @@ module Net
   #   Net::Finger.get(uri) # => String
   #
   class Finger
-    class << self
-      def get(string_or_uri)
-        case string_or_uri
-        when URI::Finger
-          uri = string_or_uri
-        when String
-          uri = URI(string_or_uri)
-        else
-          raise ArgumentError, 'Not a String or an URI::Finger'
-        end
-        request uri
-      end
+    extend TextGeneric
 
-      private
-
-      def request(uri)
-        sock = TCPSocket.new(uri.host, uri.port)
-        unless uri.is_a? URI::Finger
-          raise ArgumentError, 'uri is not an URI::Finger'
-        end
-        sock.puts uri.name.to_s
-        sock.read
-      ensure
-        # Stop remaining connection, even if they should be already cut
-        # by the server
-        sock&.close
-      end
+    def self.get(string_or_uri)
+      uri = build_uri string_or_uri, URI::Finger
+      request uri, uri.name.to_s
     end
   end
 end

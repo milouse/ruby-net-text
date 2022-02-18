@@ -19,6 +19,6 @@ describe Net::Finger do
 
   it 'raises an error on non-finger URI' do
     expect { described_class.get 'https://etienne.depar.is' }.to \
-      raise_error(ArgumentError, 'uri is not an URI::Finger')
+      raise_error(ArgumentError, 'uri is not a String, nor an URI::Finger')
   end
 end

@@ -26,7 +26,7 @@ when 'gemini'
   end
   puts links.join("\n")
 when 'gopher'
-  puts Net::Gopher.get_response u
+  puts Net::Gopher.get u
 when 'finger'
   puts Net::Finger.get u
 end
