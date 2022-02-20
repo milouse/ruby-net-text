@@ -10,84 +10,30 @@
 This project aims to add connectors to well known internet text protocols
 through the standard `Net::*` and `URI::*` ruby module namespaces.
 
-Currently, only Gemini is well supported.
+## Documentation
 
-## A Gemini client API for Ruby.
+The code is self-documented and you can browse it on rubydoc.info:
 
-`Net::Gemini` provides a rich library which can be used to build
-[Gemini](https://gemini.circumlunar.space/docs/specification.html)
-user-agents.
+### Gemini
 
-`Net::Gemini` is designed to work closely with `URI`.
+- [`URI::Gemini`](https://www.rubydoc.info/gems/ruby-net-text/URI/Gemini)
+- [`Net::Gemini`](https://www.rubydoc.info/gems/ruby-net-text/Net/Gemini)
 
-All examples bellow assume you have loaded `Net::Gemini` with:
+### Gopher
 
-```ruby
-require 'net/gemini'
-```
+- [`URI::Gopher`](https://www.rubydoc.info/gems/ruby-net-text/URI/Gopher)
+- [`Net::Gopher`](https://www.rubydoc.info/gems/ruby-net-text/Net/Gopher)
 
-This will also require 'uri' so you don't need to require it
-separately.
+### Finger
 
-The `Net::Gemini` methods in the following section do not persist
-connections (the protocol does not allow it).
+- [`URI::Finger`](https://www.rubydoc.info/gems/ruby-net-text/URI/Finger)
+- [`Net::Finger`](https://www.rubydoc.info/gems/ruby-net-text/Net/Finger)
 
-### GET by URI
+## Helpers
 
-```ruby
-uri = URI('gemini://gemini.circumlunar.space/')
-Net::Gemini.get(uri) # => String
-```
+This repository also includes 2 little helpers:
 
-### GET with Dynamic Parameters
-
-```ruby
-uri = URI('gemini://gus.guru/search')
-uri.query = URI.encode_www_form('test')
-res = Net::Gemini.get_response(uri)
-puts res.body if res.body_permitted?
-```
-
-### Response Data
-
-```ruby
-res = Net::Gemini.get_response(URI('gemini://gemini.circumlunar.space/'))
-# Status
-puts res.status # => '20'
-puts res.meta   # => 'text/gemini; charset=UTF-8; lang=en'
-# Headers
-puts res.header.inspect
-# => { status: '20', meta: 'text/gemini; charset=UTF-8',
-       mimetype: 'text/gemini', lang: 'en',
-       charset: 'utf-8', format: nil }
-```
-
-The lang, charset and format headers will only be provided in case
-of `text/*` mimetype, and only if body for `2*` status codes.
-
-```ruby
-# Body
-puts res.body if res.body_permitted?
-puts res.body(flowed: 85)
-```
-
-### Following Redirection
-
-The `#fetch` method, contrary to the `#request` one will try to
-automatically resolves redirection, leading you to the final
-destination.
-
-```ruby
-u = URI('gemini://exemple.com/redirect')
-res = Net::Gemini.start(u.host, u.port) do |g|
-  g.request(u)
-end
-puts "#{res.status} - #{res.meta}" # => '30 final/dest'
-puts res.uri.to_s                  # => 'gemini://exemple.com/redirect'
-u = URI('gemini://exemple.com/redirect')
-res = Net::Gemini.start(u.host, u.port) do |g|
-  g.fetch(u)
-end
-puts "#{res.status} - #{res.meta}" # => '20 - text/gemini;'
-puts res.uri.to_s                  # => 'gemini://exemple.com/final/dest'
-```
+- `bin/heraut`: a toy client for Gemini, Gopher and Finger. Give it a URI and
+  it will output the remote file.
+- `bin/test_thread.rb`: a toy performance test script to run against a Gemini
+  server
