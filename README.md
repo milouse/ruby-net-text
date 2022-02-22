@@ -16,18 +16,18 @@ The code is self-documented and you can browse it on rubydoc.info:
 
 ### Gemini
 
-- [`URI::Gemini`](https://www.rubydoc.info/gems/ruby-net-text/URI/Gemini)
-- [`Net::Gemini`](https://www.rubydoc.info/gems/ruby-net-text/Net/Gemini)
+- [URI::Gemini](https://www.rubydoc.info/gems/ruby-net-text/URI/Gemini)
+- [Net::Gemini](https://www.rubydoc.info/gems/ruby-net-text/Net/Gemini)
 
 ### Gopher
 
-- [`URI::Gopher`](https://www.rubydoc.info/gems/ruby-net-text/URI/Gopher)
-- [`Net::Gopher`](https://www.rubydoc.info/gems/ruby-net-text/Net/Gopher)
+- [URI::Gopher](https://www.rubydoc.info/gems/ruby-net-text/URI/Gopher)
+- [Net::Gopher](https://www.rubydoc.info/gems/ruby-net-text/Net/Gopher)
 
 ### Finger
 
-- [`URI::Finger`](https://www.rubydoc.info/gems/ruby-net-text/URI/Finger)
-- [`Net::Finger`](https://www.rubydoc.info/gems/ruby-net-text/Net/Finger)
+- [URI::Finger](https://www.rubydoc.info/gems/ruby-net-text/URI/Finger)
+- [Net::Finger](https://www.rubydoc.info/gems/ruby-net-text/Net/Finger)
 
 ## Helpers
 
