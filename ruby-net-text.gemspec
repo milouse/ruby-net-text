@@ -8,10 +8,12 @@ Gem::Specification.new do |s|
   s.email       = 'etienne@depar.is'
   s.metadata    = {
     'rubygems_mfa_required' => 'true',
-    'source_code_uri' => 'https://git.umaneti.net/ruby-net-text',
+    'source_code_uri' => 'https://git.umaneti.net/ruby-net-text/',
     'documentation_uri' => 'https://www.rubydoc.info/gems/ruby-net-text',
     'funding_uri' => 'https://liberapay.com/milouse'
   }
+  s.homepage    = 'https://git.umaneti.net/ruby-net-text/'
+  s.license     = 'MIT'
   s.files       = ['lib/net/gemini/gmi_parser.rb',
                    'lib/net/gemini/request.rb',
                    'lib/net/gemini/response.rb',
@@ -27,8 +29,6 @@ Gem::Specification.new do |s|
                    # Others
                    'README.md',
                    'LICENSE']
-  s.homepage    = 'https://git.umaneti.net/ruby-net-text/'
-  s.license     = 'MIT'
 
   s.required_ruby_version = '>= 2.7'
 end
