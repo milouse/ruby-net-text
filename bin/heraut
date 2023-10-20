@@ -9,7 +9,7 @@ u = URI(ARGV[0])
 
 if u.scheme == 'gemini'
   response = Net::Gemini.get_response u
-  puts response.body(flowed: 78)
+  puts response.body(reflow_at: 78)
   puts "\n* Headers"
   puts "#{response.status} - #{response.meta}"
   response.header.each do |k, v|

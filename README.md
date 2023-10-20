@@ -10,6 +10,29 @@
 This project aims to add connectors to well known internet text protocols
 through the standard `Net::*` and `URI::*` ruby module namespaces.
 
+## News
+
+### Version 0.0.9 gemini breaking changes
+
+This new version changes the Gemini namespace. Everything is now under the
+same `Net::Gemini` namespace. If you just used this gem as per the
+documentation, nothing changes for you. However, if you were using some hidden
+part of the Gemini API, you will probably have to make some changes.
+
+Here are all the changes:
+
+| Old names              | New names                                                                |
+|------------------------|--------------------------------------------------------------------------|
+| Net::GeminiRequest     | Net::Gemini::Request (still 'net/gemini/request')                        |
+| Net::GeminiBadRequest  | Net::Gemini::BadRequest (require 'net/gemini/error')                     |
+| Net::GeminiResponse    | Net::Gemini::Response (still 'net/gemini/response')                      |
+| Net::GeminiBadResponse | Net::Gemini::BadResponse (require 'net/gemini/error')                    |
+| Net::GeminiError       | Net::Gemini::Error (require 'net/gemini/error')                          |
+| Net::Gemini.new        | Net::Gemini::Client.new (directly required as part of 'net/gemini')      |
+| Gemini::ReflowText     | Net::Text::Reflow (no more expected to be included, but directly called) |
+| Gemini::GmiParser      | - (directly integrated into Net::Gemini::Response)                       |
+| Gemini::SSL            | - (directly integrated into Net::Gemini::Client)                         |
+
 ## Documentation
 
 The code is self-documented and you can browse it on rubydoc.info:
