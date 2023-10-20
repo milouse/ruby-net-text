@@ -14,6 +14,26 @@ Gem::Specification.new do |s|
   }
   s.homepage    = 'https://git.umaneti.net/ruby-net-text/'
   s.license     = 'MIT'
+  s.files       = ['lib/net/finger.rb',
+                   'lib/net/gemini/client.rb',
+                   'lib/net/gemini/client/ssl.rb',
+                   'lib/net/gemini/error.rb',
+                   'lib/net/gemini.rb',
+                   'lib/net/gemini/request.rb',
+                   'lib/net/gemini/response/parser.rb',
+                   'lib/net/gemini/response.rb',
+                   'lib/net/gopher.rb',
+                   'lib/net/nex.rb',
+                   'lib/net/text/generic.rb',
+                   'lib/net/text/reflow.rb',
+                   'lib/uri/finger.rb',
+                   'lib/uri/gemini.rb',
+                   'lib/uri/gopher.rb',
+                   'lib/uri/nex.rb',
+                   # Others
+                   'README.md',
+                   'LICENSE']
+
   s.post_install_message = <<~POSTINST
     The version 0.0.9 introduces some breaking changes in Gemini support.
     If you were using its internal API instead of just using the documented
@@ -22,21 +42,6 @@ Gem::Specification.new do |s|
     https://git.umaneti.net/ruby-net-text/about/
 
   POSTINST
-  s.files       = ['lib/net/gemini/gmi_parser.rb',
-                   'lib/net/gemini/request.rb',
-                   'lib/net/gemini/response.rb',
-                   'lib/net/gemini/ssl.rb',
-                   'lib/net/gemini/reflow_text.rb',
-                   'lib/net/finger.rb',
-                   'lib/net/gemini.rb',
-                   'lib/net/gopher.rb',
-                   'lib/net/generic.rb',
-                   'lib/uri/finger.rb',
-                   'lib/uri/gemini.rb',
-                   'lib/uri/gopher.rb',
-                   # Others
-                   'README.md',
-                   'LICENSE']
 
   s.required_ruby_version = '>= 2.7'
 end
