@@ -3,7 +3,7 @@
 Gem::Specification.new do |s|
   s.name        = 'ruby-net-text'
   s.version     = '0.0.9'
-  s.summary     = 'Gemini, Gopher, and Finger support for Net::* and URI::*'
+  s.summary     = 'Finger, Gemini and Gopher support for Net::* and URI::*'
   s.authors     = ['Étienne Deparis']
   s.email       = 'etienne@depar.is'
   s.metadata    = {
