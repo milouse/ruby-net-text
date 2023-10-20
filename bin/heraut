@@ -4,6 +4,7 @@
 require 'net/finger'
 require 'net/gemini'
 require 'net/gopher'
+require 'net/nex'
 
 u = URI(ARGV[0])
 

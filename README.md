@@ -1,4 +1,4 @@
-# Finger, Gemini and Gopher support for Net::* and URI::*
+# Finger, Gemini, Gopher and Nex support for Net::* and URI::*
 
 [![Support using Liberapay](https://img.shields.io/badge/Liberapay-Support_me-yellow?logo=liberapay)](https://liberapay.com/milouse/donate)
 [![Support using Flattr](https://img.shields.io/badge/Flattr-Support_me-brightgreen?logo=flattr)](https://flattr.com/@milouse)
@@ -52,11 +52,16 @@ The code is self-documented and you can browse it on rubydoc.info:
 - [URI::Gopher](https://www.rubydoc.info/gems/ruby-net-text/URI/Gopher)
 - [Net::Gopher](https://www.rubydoc.info/gems/ruby-net-text/Net/Gopher)
 
+### Nex
+
+- [URI::Nex](https://www.rubydoc.info/gems/ruby-net-text/URI/Nex)
+- [Net::Nex](https://www.rubydoc.info/gems/ruby-net-text/Net/Nex)
+
 ## Helpers
 
 This repository also includes 2 little helpers:
 
-- `bin/heraut`: a toy client for Finger, Gemini and Gopher. Give it a URI and
-  it will output the remote file.
+- `bin/heraut`: a toy client for Finger, Gemini, Gopher and Nex. Give it a URI
+  and it will output the remote file.
 - `bin/test_thread.rb`: a toy performance test script to run against a Gemini
   server
