@@ -2,8 +2,8 @@
 
 Gem::Specification.new do |s|
   s.name        = 'ruby-net-text'
-  s.version     = '0.0.8'
-  s.summary     = 'Gemini, Gopher, and Finger support for Net::* and URI::*'
+  s.version     = '0.0.9'
+  s.summary     = 'Finger, Gemini, Gopher and Nex support for Net::* and URI::*'
   s.authors     = ['Étienne Deparis']
   s.email       = 'etienne@depar.is'
   s.metadata    = {
@@ -14,6 +14,14 @@ Gem::Specification.new do |s|
   }
   s.homepage    = 'https://git.umaneti.net/ruby-net-text/'
   s.license     = 'MIT'
+  s.post_install_message = <<~POSTINST
+    The version 0.0.9 introduces some breaking changes in Gemini support.
+    If you were using its internal API instead of just using the documented
+    methods, please refer to the README to know more about the changes.
+
+    https://git.umaneti.net/ruby-net-text/about/
+
+  POSTINST
   s.files       = ['lib/net/gemini/gmi_parser.rb',
                    'lib/net/gemini/request.rb',
                    'lib/net/gemini/response.rb',
