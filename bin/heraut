@@ -7,8 +7,7 @@ require 'net/gopher'
 
 u = URI(ARGV[0])
 
-case u.scheme
-when 'gemini'
+if u.scheme == 'gemini'
   response = Net::Gemini.get_response u
   puts response.body(flowed: 78)
   puts "\n* Headers"
@@ -25,10 +24,9 @@ when 'gemini'
     end
   end
   puts links.join("\n")
-when 'gopher'
-  puts Net::Gopher.get u
-when 'finger'
-  puts Net::Finger.get u
+else
+  klass = u.scheme.capitalize
+  puts Kernel.const_get("::Net::#{klass}").get u
 end
 
 # Local Variables:
