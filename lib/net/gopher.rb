@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../uri/gopher'
-require_relative 'generic'
+require_relative 'text/generic'
 
 module Net
   # == A Gopher client API for Ruby.
@@ -28,9 +28,7 @@ module Net
   #   uri = URI('gopher://thelambdalab.xyz/1/projects/elpher/')
   #   Net::Gopher.get(uri) # => String
   #
-  class Gopher
-    extend TextGeneric
-
+  class Gopher < Text::Generic
     def self.get(string_or_uri)
       uri = build_uri string_or_uri, URI::Gopher
       request uri, "#{uri.selector}\r\n"

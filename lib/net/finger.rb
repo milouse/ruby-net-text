@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../uri/finger'
-require_relative 'generic'
+require_relative 'text/generic'
 
 module Net
   # == A Finger client API for Ruby.
@@ -28,9 +28,7 @@ module Net
   #   uri = URI('finger://skyjake.fi/jaakko')
   #   Net::Finger.get(uri) # => String
   #
-  class Finger
-    extend TextGeneric
-
+  class Finger < Text::Generic
     def self.get(string_or_uri)
       uri = build_uri string_or_uri, URI::Finger
       request uri, uri.name.to_s
