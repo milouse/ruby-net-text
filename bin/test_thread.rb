@@ -1,7 +1,7 @@
 #!/usr/bin/env -S ruby -I lib -w
 # frozen_string_literal: true
 
-require 'net/gemini'
+require_relative 'lib/net/gemini'
 
 all_threads = []
 

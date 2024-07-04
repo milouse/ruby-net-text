@@ -14,8 +14,7 @@ module URI # :nodoc:
     DEFAULT_PORT = 1965
 
     # An Array of the available components for URI::Gemini.
-    COMPONENT = [:scheme, :host, :port,
-                 :path, :query, :fragment].freeze
+    COMPONENT = %i[scheme host port path query fragment].freeze
   end
 
   if respond_to? :register_scheme

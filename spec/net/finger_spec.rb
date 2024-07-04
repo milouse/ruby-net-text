@@ -3,7 +3,7 @@
 require_relative '../../lib/net/finger'
 
 describe Net::Finger do
-  it 'get finger content' do
+  it 'gets finger content' do
     f = described_class.get 'finger://skyjake.fi/jaakko'
     # We know what we should get
     lines = f.strip.split("\n")

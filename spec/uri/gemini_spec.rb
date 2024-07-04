@@ -8,7 +8,7 @@ describe URI::Gemini do
       be_an_instance_of(described_class)
   end
 
-  it 'parses gemini://gemini.circumlunar.space/docs/specification.gmi' do
+  it 'parses official gemini spec', :aggregate_failures do
     u = URI('gemini://gemini.circumlunar.space/docs/specification.gmi')
     expect(u.host).to eq('gemini.circumlunar.space')
     expect(u.path).to eq('/docs/specification.gmi')

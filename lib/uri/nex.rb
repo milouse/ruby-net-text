@@ -14,7 +14,7 @@ module URI # :nodoc:
     DEFAULT_PORT = 1900
 
     # An Array of the available components for URI::Nex.
-    COMPONENT = [:scheme, :host, :port, :path].freeze
+    COMPONENT = %i[scheme host port path].freeze
   end
 
   if respond_to? :register_scheme

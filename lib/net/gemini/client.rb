@@ -5,7 +5,8 @@ require_relative 'request'
 require_relative 'response'
 
 module Net
-  module Gemini
+  module Gemini # rubocop:disable Style/Documentation
+    # An example client to fetch resources hosted on Gemini network.
     class Client
       attr_writer :certs_path
 
@@ -15,13 +16,18 @@ module Net
         @certs_path = '~/.cache/gemini/certs'
       end
 
-      def request(uri)
+      # This method can raise an OpenSSL::SSL::SSLError
+      def request!(uri)
         init_sockets
         req = Request.new uri
         req.write @ssl_socket
         res = Response.read_new(@ssl_socket)
         res.uri = uri
         res.reading_body(@ssl_socket)
+      end
+
+      def request(uri)
+        request! uri
       rescue OpenSSL::SSL::SSLError => e
         msg = format(
           'SSLError: %<cause>s',
@@ -36,8 +42,10 @@ module Net
 
       def fetch(uri, limit = 5)
         raise Error, 'Too many Gemini redirects' if limit.zero?
+
         r = request(uri)
         return r unless r.status[0] == '3'
+
         begin
           uri = handle_redirect(r)
         rescue ArgumentError, URI::InvalidURIError
@@ -55,6 +63,7 @@ module Net
         new_uri = URI(response.meta)
         uri.merge!(new_uri)
         raise Error, "Redirect loop on #{uri}" if uri.to_s == old_url
+
         @host = uri.host
         @port = uri.port
         uri

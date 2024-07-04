@@ -1,10 +1,10 @@
 #!/usr/bin/env -S ruby -I lib -w
 # frozen_string_literal: true
 
-require 'net/finger'
-require 'net/gemini'
-require 'net/gopher'
-require 'net/nex'
+require_relative '../lib/net/finger'
+require_relative '../lib/net/gemini'
+require_relative '../lib/net/gopher'
+require_relative '../lib/net/nex'
 
 u = URI(ARGV[0])
 
