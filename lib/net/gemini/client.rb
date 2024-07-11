@@ -3,6 +3,7 @@
 require_relative 'error'
 require_relative 'request'
 require_relative 'response'
+require_relative '../text/generic'
 
 module Net
   module Gemini # rubocop:disable Style/Documentation
@@ -87,7 +88,8 @@ module Net
       start(uri.host, uri.port) { |gem| gem.fetch(uri) }
     end
 
-    def self.get(uri)
+    def self.get(string_or_uri)
+      uri = Net::Text::Generic.build_uri string_or_uri, URI::Gemini
       get_response(uri).body
     end
   end

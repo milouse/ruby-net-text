@@ -29,8 +29,7 @@ module Net
   #
   # === GET by URI
   #
-  #   uri = URI('gemini://gemini.circumlunar.space/')
-  #   Net::Gemini.get(uri) # => String
+  #   Net::Gemini.get('gemini://gemini.circumlunar.space/') # => String
   #
   # === GET with Dynamic Parameters
   #
