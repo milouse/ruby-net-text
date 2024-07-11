@@ -6,7 +6,12 @@ require_relative '../lib/net/gemini'
 require_relative '../lib/net/gopher'
 require_relative '../lib/net/nex'
 
-u = URI(ARGV[0])
+if ARGV.include?('-h') || ARGV.include?('--help')
+  puts "usage: #{$PROGRAM_NAME} [-h] URI"
+  exit
+end
+
+u = URI(ARGV.first)
 
 if u.scheme == 'gemini'
   response = Net::Gemini.get_response u
