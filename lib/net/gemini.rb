@@ -11,7 +11,7 @@ module Net
   #
   # Net::Gemini provides a library which can be used to build Gemini
   # user-agents.
-  # @see https://gemini.circumlunar.space/docs/specification.html
+  # @see gemini://geminiprotocol.net/docs/specification.gmi
   #
   # Net::Gemini is designed to work closely with URI.
   #

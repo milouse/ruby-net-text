@@ -12,7 +12,7 @@ module Net
     # The syntax of Gemini Responses are defined in the Gemini
     # specification, section 3.
     #
-    # @see https://gemini.circumlunar.space/docs/specification.html
+    # @see https://geminiprotocol.net/docs/protocol-specification.html
     #
     # See {Net::Gemini} documentation to see how to interract with a
     # Response.

@@ -13,7 +13,7 @@ module Net
     # The syntax of Gemini Requests are defined in the Gemini
     # specification, section 2.
     #
-    # @see https://gemini.circumlunar.space/docs/specification.html
+    # @see https://geminiprotocol.net/docs/protocol-specification.html
     #
     class Request
       attr_reader :uri
