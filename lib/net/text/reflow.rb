@@ -12,6 +12,7 @@ module Net
         return '' unless m
         # Each quote line should begin with the quote mark
         return m[1] if m[1].start_with?('>')
+
         ' ' * m[1].length
       end
 
@@ -20,6 +21,7 @@ module Net
         if mono_block_open || line.start_with?('=>') || line.length < length
           return [line]
         end
+
         output = []
         prefix = reflow_line_prefix(line)
         limit_chars = ['-', '­', ' '].freeze
@@ -35,15 +37,9 @@ module Net
       end
 
       def self.format_body(body, length)
-        unless length.is_a? Integer
-          raise ArgumentError, "Length must be Integer, #{length.class} given"
-        end
-        return body if length.zero?
-
         new_body = []
         mono_block_open = false
-        buf = StringIO.new(body)
-        while (line = buf.gets)
+        body.each_line do |line|
           if line.start_with?('```')
             mono_block_open = !mono_block_open
             # Don't include code block toggle lines

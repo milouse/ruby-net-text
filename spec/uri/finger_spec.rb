@@ -8,25 +8,25 @@ describe URI::Finger do
       be_an_instance_of(described_class)
   end
 
-  it 'parses finger://skyjake.fi/jaakko' do
+  it 'parses finger://skyjake.fi/jaakko', :aggregate_failures do
     u = URI('finger://skyjake.fi/jaakko')
     expect(u.host).to eq('skyjake.fi')
     expect(u.name).to eq('jaakko')
   end
 
-  it 'parses finger://jaakko@skyjake.fi/' do
+  it 'parses finger://jaakko@skyjake.fi/', :aggregate_failures do
     u = URI('finger://jaakko@skyjake.fi/')
     expect(u.host).to eq('skyjake.fi')
     expect(u.name).to eq('jaakko')
   end
 
-  it 'parses finger://jaakko@skyjake.fi' do
+  it 'parses finger://jaakko@skyjake.fi', :aggregate_failures do
     u = URI('finger://jaakko@skyjake.fi')
     expect(u.host).to eq('skyjake.fi')
     expect(u.name).to eq('jaakko')
   end
 
-  it 'parses finger://skyjake.fi' do
+  it 'parses finger://skyjake.fi', :aggregate_failures do
     u = URI('finger://skyjake.fi')
     expect(u.host).to eq('skyjake.fi')
     expect(u.name).to eq('')

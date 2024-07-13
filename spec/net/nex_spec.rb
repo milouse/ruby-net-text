@@ -3,7 +3,7 @@
 require_relative '../../lib/net/nex'
 
 describe Net::Nex do
-  it 'get nex content' do
+  it 'gets nex content' do
     f = described_class.get 'nex://nightfall.city/nex/info/specification.txt'
     # We know what we should get
     lines = f.strip.split("\n")

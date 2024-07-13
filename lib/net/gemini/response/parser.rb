@@ -7,19 +7,27 @@ module Net
     class Response
       private
 
+      def received_mime(raw_meta)
+        meta_data = raw_meta.map { |m| m.split('=') }
+        mime = { lang: nil, charset: 'utf-8', format: nil }
+        new_mime = meta_data.filter_map do |opt|
+          key = opt[0].downcase.to_sym
+          next unless mime.has_key? key
+
+          [key, opt[1].downcase]
+        end
+        mime.merge new_mime.to_h
+      end
+
       def parse_meta
         header = { status: @status, meta: @meta, mimetype: nil }
         return header unless body_permitted?
-        mime = { lang: nil, charset: 'utf-8', format: nil }
+
         raw_meta = meta.split(';').map(&:strip)
         header[:mimetype] = raw_meta.shift
         return header unless raw_meta.any?
-        raw_meta.map { |m| m.split('=') }.each do |opt|
-          key = opt[0].downcase.to_sym
-          next unless mime.has_key? key
-          mime[key] = opt[1].downcase
-        end
-        header.merge(mime)
+
+        header.merge received_mime(raw_meta)
       end
 
       def parse_preformatted_block(line, buf)
@@ -36,6 +44,7 @@ module Net
       def parse_link(line)
         m = line.strip.match(/\A=>\s*([^\s]+)(?:\s*(.+))?\z/)
         return if m.nil?
+
         begin
           uri = URI(m[1])
         rescue URI::InvalidURIError

@@ -8,13 +8,13 @@ describe URI::Nex do
       be_an_instance_of(described_class)
   end
 
-  it 'parses nex://nightfall.city/nex/info/specification.txt' do
+  it 'parses nex official specification', :aggregate_failures do
     u = URI('nex://nightfall.city/nex/info/specification.txt')
     expect(u.host).to eq('nightfall.city')
     expect(u.path).to eq('/nex/info/specification.txt')
   end
 
-  it 'parses nex://nightfall.city' do
+  it 'parses nex://nightfall.city', :aggregate_failures do
     u = URI('nex://nightfall.city')
     expect(u.host).to eq('nightfall.city')
     expect(u.path).to eq('')

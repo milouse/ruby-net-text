@@ -12,7 +12,7 @@ module Net
     # The syntax of Gemini Responses are defined in the Gemini
     # specification, section 3.
     #
-    # @see https://gemini.circumlunar.space/docs/specification.html
+    # @see https://geminiprotocol.net/docs/protocol-specification.html
     #
     # See {Net::Gemini} documentation to see how to interract with a
     # Response.
@@ -55,12 +55,12 @@ module Net
 
       def reading_body(sock)
         return self unless body_permitted?
+
         raw_body = []
-        while (line = sock.gets)
-          raw_body << line
-        end
+        sock.each_line { raw_body << _1 }
         @body = encode_body(raw_body.join)
         return self unless @header[:mimetype] == 'text/gemini'
+
         parse_body
         self
       end
@@ -72,7 +72,14 @@ module Net
       # @return [String] the body content
       def body(reflow_at: -1)
         return '' if @body.nil? # Maybe not ready?
-        return @body if reflow_at < 0 || @header[:format] == 'fixed'
+
+        unless reflow_at.is_a? Integer
+          raise(
+            ArgumentError, "reflow_at must be Integer, #{reflow_at.class} given"
+          )
+        end
+
+        return @body if reflow_at <= 0 || @header[:format] == 'fixed'
 
         Net::Text::Reflow.format_body(@body, reflow_at)
       end
@@ -86,6 +93,7 @@ module Net
           str = sock.gets($INPUT_RECORD_SEPARATOR, 1029)
           m = /\A([1-6]\d) (.*)\r\n\z/.match(str)
           raise BadResponse, "wrong status line: #{str.dump}" if m.nil?
+
           new(*m.captures)
         end
       end
@@ -94,6 +102,7 @@ module Net
 
       def encode_body(body)
         return body unless @header[:mimetype].start_with?('text/')
+
         if @header[:charset] && @header[:charset] != 'utf-8'
           # If body use another charset than utf-8, we need first to
           # declare the raw byte string as using this chasret

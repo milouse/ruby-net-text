@@ -7,14 +7,14 @@ module URI # :nodoc:
   # The syntax of Nex URIs is defined in the Nex specification,
   # section 1.2.
   #
-  # @see https://gemini.circumlunar.space/docs/specification.html
+  # @see nex://nightfall.city/nex/info/specification.txt
   #
   class Nex < HTTP
     # A Default port of 1900 for URI::Nex.
     DEFAULT_PORT = 1900
 
     # An Array of the available components for URI::Nex.
-    COMPONENT = [:scheme, :host, :port, :path].freeze
+    COMPONENT = %i[scheme host port path].freeze
   end
 
   if respond_to? :register_scheme

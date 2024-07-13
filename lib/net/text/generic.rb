@@ -19,6 +19,7 @@ module Net
       def self.build_uri(string_or_uri, uri_class)
         string_or_uri = URI(string_or_uri) if string_or_uri.is_a?(String)
         return string_or_uri if string_or_uri.is_a?(uri_class)
+
         raise ArgumentError, "uri is not a String, nor an #{uri_class.name}"
       end
     end

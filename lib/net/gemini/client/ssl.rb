@@ -23,6 +23,7 @@ module Net
 
         cert_file = File.expand_path("#{@certs_path}/#{@host}.pem")
         return ssl_check_existing(cert, cert_file) if File.exist?(cert_file)
+
         FileUtils.mkdir_p(File.expand_path(@certs_path))
         File.open(cert_file, 'wb') { |f| f.print cert.to_pem }
         true
@@ -30,10 +31,12 @@ module Net
 
       def ssl_context
         ssl_context = OpenSSL::SSL::SSLContext.new
-        ssl_context.set_params(verify_mode: OpenSSL::SSL::VERIFY_PEER)
-        ssl_context.min_version = OpenSSL::SSL::TLS1_2_VERSION
-        ssl_context.verify_hostname = true
-        ssl_context.ca_file = '/etc/ssl/certs/ca-certificates.crt'
+        ssl_context.set_params(
+          verify_mode: OpenSSL::SSL::VERIFY_PEER,
+          min_version: OpenSSL::SSL::TLS1_2_VERSION,
+          ca_file: '/etc/ssl/certs/ca-certificates.crt',
+          verify_hostname: true
+        )
         ssl_context.verify_callback = lambda do |preverify_ok, store_context|
           return true if preverify_ok
 

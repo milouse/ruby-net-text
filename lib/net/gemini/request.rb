@@ -13,7 +13,7 @@ module Net
     # The syntax of Gemini Requests are defined in the Gemini
     # specification, section 2.
     #
-    # @see https://gemini.circumlunar.space/docs/specification.html
+    # @see https://geminiprotocol.net/docs/protocol-specification.html
     #
     class Request
       attr_reader :uri
@@ -21,11 +21,11 @@ module Net
       def initialize(uri_or_str)
         # In any case, make some sanity check over this uri-like think
         url = uri_or_str.to_s
-        if url.length > 1024
-          raise BadRequest, "Request too long: #{url.dump}"
-        end
+        raise BadRequest, "Request too long: #{url.dump}" if url.length > 1024
+
         @uri = URI(url)
         return if uri.is_a? URI::Gemini
+
         raise BadRequest, "Not a Gemini URI: #{url.dump}"
       end
 
@@ -45,6 +45,7 @@ module Net
           str = sock.gets($INPUT_RECORD_SEPARATOR, 1026)
           m = /\A(.*)\r\n\z/.match(str)
           raise BadRequest, "Malformed request: #{str&.dump}" if m.nil?
+
           new(m[1])
         end
       end
