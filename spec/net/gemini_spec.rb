@@ -14,4 +14,8 @@ describe Net::Gemini do
     expect { described_class.get 'https://etienne.depar.is' }.to \
       raise_error(ArgumentError, 'uri is not a String, nor an URI::Gemini')
   end
+
+  it 'does not raise with empty metadata' do
+    expect { described_class.get 'gemini://tilde.pink' }.not_to raise_error
+  end
 end
