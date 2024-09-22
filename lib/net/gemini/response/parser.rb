@@ -11,6 +11,8 @@ module Net
         meta_data = raw_meta.map { |m| m.split('=') }
         mime = { lang: nil, charset: 'utf-8', format: nil }
         new_mime = meta_data.filter_map do |opt|
+          next if opt.empty?
+
           key = opt[0].downcase.to_sym
           next unless mime.has_key? key
 
