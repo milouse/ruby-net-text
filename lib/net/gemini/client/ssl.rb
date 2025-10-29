@@ -34,7 +34,6 @@ module Net
         ssl_context.set_params(
           verify_mode: OpenSSL::SSL::VERIFY_PEER,
           min_version: OpenSSL::SSL::TLS1_2_VERSION,
-          ca_file: '/etc/ssl/certs/ca-certificates.crt',
           verify_hostname: true
         )
         ssl_context.verify_callback = lambda do |preverify_ok, store_context|
