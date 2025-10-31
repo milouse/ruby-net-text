@@ -60,6 +60,20 @@ module Net
   #   puts res.body if res.body_permitted?
   #   puts res.body(reflow_at: 85)
   #
+  # ==== Large Response
+  #
+  # You may not want to load the whole body of a large response such as
+  # images, videos, etc. into memory.
+  # You can read response body as chunks.
+  #
+  #   File.open 'image.png', 'wb' do |f|
+  #     Net::Gemini.get_response(URI('gemini://exmaple.org/image.png')) do |res|
+  #       res.read_body do |chunk|
+  #         f.write chunk
+  #       end
+  #     end
+  #   end
+  #
   # === Following Redirection
   #
   # The {Client#fetch} method, contrary to the {Client#request} one will try

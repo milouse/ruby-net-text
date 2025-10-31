@@ -5,8 +5,9 @@ require_relative 'request'
 require_relative 'response'
 require_relative '../text/generic'
 
+# rubocop:disable Style/Documentation
 module Net
-  module Gemini # rubocop:disable Style/Documentation
+  module Gemini
     # An example client to fetch resources hosted on Gemini network.
     class Client
       attr_writer :certs_path
@@ -100,5 +101,6 @@ module Net
     end
   end
 end
+# rubocop:enable Style/Documentation
 
 require_relative 'client/ssl'
