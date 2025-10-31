@@ -18,4 +18,10 @@ describe Net::Gemini do
   it 'does not raise with empty metadata' do
     expect { described_class.get 'gemini://tilde.pink' }.not_to raise_error
   end
+
+  it 'yields response chunks' do
+    described_class.get_response(URI('gemini://geminiprotocol.net/docs/specification.gmi')) do |res|
+      expect { |block| res.read_body(&block) }.to yield_control.at_least(1)
+    end
+  end
 end
