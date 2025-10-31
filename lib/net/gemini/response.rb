@@ -62,12 +62,22 @@ module Net
       end
 
       def read_body(&block)
+        return @body unless @socket
+
+        if block_given?
+          while chunk = @socket.read(4096)
+            block.call chunk
+          end
+          return @body
+        end
+
         raw_body = []
         @socket.each_line { raw_body << _1 }
         @body = encode_body(raw_body.join)
-        return self unless @header[:mimetype] == 'text/gemini'
+        return @body unless @header[:mimetype] == 'text/gemini'
 
         parse_body
+        @body
       ensure
         @socket = nil
       end
