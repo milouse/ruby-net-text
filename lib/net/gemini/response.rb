@@ -35,9 +35,17 @@ module Net
       # The URI related to this response as an URI object.
       attr_accessor :uri
 
-      # @return [Array<String>] All links found on a Gemini response of MIME
-      #   text/gemini
+      # @return [Array<Hash>]
+      #   * :uri [URI::Generic] The link URI
+      #   * :label [String, nil] The link label
+      # All links found on a Gemini response of MIME text/gemini
       attr_reader :links
+
+      # @return [Array<Hash>]
+      #   * :meta [String] The meta information
+      #   * :content [String] The preformatted content
+      # All pre-formatted blocks found on a Gemini response of MIME text/gemini
+      attr_reader :preformatted_blocks
 
       def initialize(status = nil, meta = nil)
         @status = status
@@ -47,6 +55,7 @@ module Net
         @body = nil
         @links = []
         @preformatted_blocks = []
+        @socket = nil
       end
 
       def body_permitted?
@@ -56,13 +65,31 @@ module Net
       def reading_body(sock)
         return self unless body_permitted?
 
+        @socket = sock
+
+        self
+      end
+
+      def read_body(&block)
+        return @body unless @socket
+
+        if block_given?
+          while chunk = @socket.read(4096)
+            block.call chunk
+          end
+          # When a block given, this class doesn't care about the response body
+          return nil
+        end
+
         raw_body = []
-        sock.each_line { raw_body << _1 }
+        @socket.each_line { raw_body << _1 }
         @body = encode_body(raw_body.join)
-        return self unless @header[:mimetype] == 'text/gemini'
+        return @body unless @header[:mimetype] == 'text/gemini'
 
         parse_body
-        self
+        @body
+      ensure
+        @socket = nil
       end
 
       # Return the response body (i.e. the requested document content).
@@ -71,7 +98,11 @@ module Net
       #   reflowed. Default is -1, which means "do not reflow".
       # @return [String] the body content
       def body(reflow_at: -1)
-        return '' if @body.nil? # Maybe not ready?
+        if @body.nil?
+          return '' if @socket.nil? # Maybe not ready nor already #read_body called
+
+          read_body
+        end
 
         unless reflow_at.is_a? Integer
           raise(
