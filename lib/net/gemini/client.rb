@@ -27,8 +27,14 @@ module Net
         res.reading_body(@ssl_socket)
       end
 
-      def request(uri)
-        request! uri
+      def request(uri, &block)
+        r = request! uri
+        if block_given?
+          block&.call r
+        else
+          r.read_body
+        end
+        r
       rescue OpenSSL::SSL::SSLError => e
         msg = format(
           'SSLError: %<cause>s',
@@ -41,10 +47,10 @@ module Net
         finish
       end
 
-      def fetch(uri, limit = 5)
+      def fetch(uri, limit = 5, &block)
         raise Error, 'Too many Gemini redirects' if limit.zero?
 
-        r = request(uri)
+        r = request(uri, &block)
         return r unless r.status[0] == '3'
 
         begin
@@ -53,7 +59,7 @@ module Net
           return r
         end
         warn "Redirect to #{uri}" if $VERBOSE
-        fetch(uri, limit - 1)
+        fetch(uri, limit - 1, &block)
       end
 
       private
@@ -84,8 +90,8 @@ module Net
       yield gem
     end
 
-    def self.get_response(uri)
-      start(uri.host, uri.port) { |gem| gem.fetch(uri) }
+    def self.get_response(uri, &block)
+      start(uri.host, uri.port) { |gem| gem.fetch(uri, &block) }
     end
 
     def self.get(string_or_uri)

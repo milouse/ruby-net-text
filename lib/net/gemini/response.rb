@@ -56,13 +56,20 @@ module Net
       def reading_body(sock)
         return self unless body_permitted?
 
+        @socket = sock
+
+        self
+      end
+
+      def read_body(&block)
         raw_body = []
-        sock.each_line { raw_body << _1 }
+        @socket.each_line { raw_body << _1 }
         @body = encode_body(raw_body.join)
         return self unless @header[:mimetype] == 'text/gemini'
 
         parse_body
-        self
+      ensure
+        @socket = nil
       end
 
       # Return the response body (i.e. the requested document content).
@@ -71,7 +78,9 @@ module Net
       #   reflowed. Default is -1, which means "do not reflow".
       # @return [String] the body content
       def body(reflow_at: -1)
-        return '' if @body.nil? # Maybe not ready?
+        return '' if @body.nil? && @socket.nil? # Maybe not ready?
+
+        read_body if @body.nil? && !@socket.nil?
 
         unless reflow_at.is_a? Integer
           raise(
