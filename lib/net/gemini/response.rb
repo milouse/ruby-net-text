@@ -47,6 +47,7 @@ module Net
         @body = nil
         @links = []
         @preformatted_blocks = []
+        @socket = nil
       end
 
       def body_permitted?
