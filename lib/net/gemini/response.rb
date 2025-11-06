@@ -69,7 +69,8 @@ module Net
           while chunk = @socket.read(4096)
             block.call chunk
           end
-          return @body
+          # When a block given, this class doesn't care about the response body
+          return nil
         end
 
         raw_body = []
