@@ -89,9 +89,11 @@ module Net
       #   reflowed. Default is -1, which means "do not reflow".
       # @return [String] the body content
       def body(reflow_at: -1)
-        return '' if @body.nil? && @socket.nil? # Maybe not ready?
+        if @body.nil?
+          return '' if @socket.nil? # Maybe not ready nor already #read_body called
 
-        read_body if @body.nil? && !@socket.nil?
+          read_body
+        end
 
         unless reflow_at.is_a? Integer
           raise(
