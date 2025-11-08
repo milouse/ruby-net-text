@@ -35,9 +35,17 @@ module Net
       # The URI related to this response as an URI object.
       attr_accessor :uri
 
-      # @return [Array<String>] All links found on a Gemini response of MIME
-      #   text/gemini
+      # @return [Array<Hash>]
+      #   * :uri [URI::Generic] The link URI
+      #   * :label [String, nil] The link label
+      # All links found on a Gemini response of MIME text/gemini
       attr_reader :links
+
+      # @return [Array<Hash>]
+      #   * :meta [String] The meta information
+      #   * :content [String] The preformatted content
+      # All pre-formatted blocks found on a Gemini response of MIME text/gemini
+      attr_reader :preformatted_blocks
 
       def initialize(status = nil, meta = nil)
         @status = status
