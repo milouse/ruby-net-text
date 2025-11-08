@@ -60,6 +60,13 @@ module Net
   #   puts res.body if res.body_permitted?
   #   puts res.body(reflow_at: 85)
   #
+  # When the response is `text/gemini` mimetype, the body is parsed automatically
+  # unless you call {Response#read_body} with a block.
+  # You can then access links and preformatted blocks found in the body.
+  #
+  #   res.links # => [{ :uri => #<URI::Gemini gemini://...>, :label => "..." }, ...]
+  #   res.preformatted_blocks # => [{ :meta => "...", :content => "..." }, ...]
+  #
   # ==== Large Response
   #
   # You may not want to load the whole body of a large response such as
@@ -72,6 +79,17 @@ module Net
   #         f.write chunk
   #       end
   #     end
+  #   end
+  #
+  # You can parse the response body using {Text::GmiParser} when the mimetype is 'text/gemini',
+  # though the body is not parsed automatically when {Response#read_body} is called with a block.
+  #
+  #   if res.meta == 'text/gemini'
+  #     body = File.read('path/to/saved/body')
+  #     parser = Net::Text::GmiParser.new(base_uri: 'gemini://...')
+  #     parser.parse(body)
+  #     parser.links # => [{ :uri => #<URI::Gemini gemini://...>, :label => "..." }, ...]
+  #     parser.preformatted_blocks # => [{ :meta => "...", :content => "..." }, ...]
   #   end
   #
   # === Following Redirection
