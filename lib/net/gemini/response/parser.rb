@@ -31,6 +31,15 @@ module Net
 
         header.merge received_mime(raw_meta)
       end
+
+      def parse_body
+        require 'net/text/gmi_parser'
+
+        parser = Net::Text::GmiParser.new(base_uri: uri)
+        parser.parse(@body)
+        @links = parser.links
+        @preformatted_blocks = parser.preformatted_blocks
+      end
     end
   end
 end
