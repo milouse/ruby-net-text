@@ -144,6 +144,15 @@ module Net
         # Just declare that the body uses utf-8
         body.force_encoding('utf-8')
       end
+
+      def parse_body
+        require 'net/text/gmi_parser'
+
+        parser = Net::Text::GmiParser.new(base_uri: uri)
+        parser.parse(@body)
+        @links = parser.links
+        @preformatted_blocks = parser.preformatted_blocks
+      end
     end
   end
 end
