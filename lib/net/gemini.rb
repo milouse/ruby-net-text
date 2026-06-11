@@ -21,8 +21,7 @@ module Net
   #
   #   require 'net/gemini'
   #
-  # This will also require 'uri' so you don't need to require it
-  # separately.
+  # This will also require 'uri' so you don't need to require it separately.
   #
   # The Net::Gemini methods in the following section do not persist
   # connections.
@@ -53,8 +52,8 @@ module Net
   #           mimetype: 'text/gemini', lang: 'en',
   #           charset: 'utf-8', format: nil }
   #
-  # The lang, charset and format headers will only be provided in case
-  # of `text/*` mimetype, and only if body for 2* status codes.
+  # The `:lang`, `:charset` and `:format` headers will only be provided in case
+  # of `text/*` mimetype, and {Response#body body} only for 2* status codes.
   #
   #   # Body
   #   puts res.body if res.body_permitted?
@@ -79,13 +78,13 @@ module Net
   #   end
   #   f.close
   #
-  # It has to be noted that the block given to the {Gemini::get_response} method
-  # is executed while the socket is being read. This means the
-  # {Response} instance you get as block argument does not have parsed
-  # its body in case of a `text/gemini` mimetype, and thus its {Response#links}
-  # and {Response#preformatted_blocks} arrays will be empty. In any case,
-  # {Gemini::get_response} returns the {Response} instance, thus if you need
-  # access to these arrays, you must do this:
+  # It has to be noted that the block given to the {::get_response} method is
+  # executed while the socket is being read. This means the {Response} instance
+  # you get as block argument does not have parsed its body in case of
+  # a `text/gemini` mimetype, and thus its {Response#links} and
+  # {Response#preformatted_blocks} arrays will be empty. In any case,
+  # {::get_response} returns the {Response} instance, thus if you need access to
+  # these arrays, you must do this:
   #
   #   uri = URI('gemini://example.org/very_long_text.gmi')
   #   res = Net::Gemini.get_response(uri) do |res|
@@ -96,9 +95,8 @@ module Net
   #
   # === Following Redirection
   #
-  # The {Client#fetch} method, contrary to the {Client#request} one will try
-  # to automatically resolves redirection, leading you to the final
-  # destination.
+  # The {Client#fetch} method, contrary to the {Client#request} one will try to
+  # automatically resolves redirection, leading you to the final destination.
   #
   #   u = URI('gemini://exemple.com/redirect')
   #   res = Net::Gemini.start(u.host, u.port) do |g|
@@ -114,8 +112,8 @@ module Net
   #   puts "#{res.status} - #{res.meta}" # => '20 - text/gemini;'
   #   puts res.uri.to_s                  # => 'gemini://exemple.com/final/dest'
   #
-  # This fetch method is automatically called by the class methods {Client::get}
-  # and {Client::get_response}.
+  # This fetch method is automatically called by the class methods {::get} and
+  # {::get_response}.
   #
   #   res = Net::Gemini.get_response(URI('gemini://exemple.com/redirect'))
   #   puts "#{res.status} - #{res.meta}" # => '20 - text/gemini;'

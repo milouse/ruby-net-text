@@ -53,5 +53,9 @@ Style/Alias:
 Style/ConditionalAssignment:
   EnforcedStyle: assign_inside_condition
 
+Style/Documentation:
+  Exclude:
+    - lib/net/gemini/client.rb
+
 Style/PreferredHashMethods:
   EnforcedStyle: verbose

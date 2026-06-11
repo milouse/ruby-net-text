@@ -19,32 +19,45 @@ module Net
     #
     class Response
       # @return [String] The Gemini response <STATUS> string.
-      # @example '20'
+      # @example
+      #   "20"
       attr_reader :status
 
       # @return [String] The Gemini response <META> message sent by the server.
-      # @example 'text/gemini'
+      # @example
+      #   "text/gemini"
       attr_reader :meta
 
-      # @return [Hash] The Gemini response <META>.
+      # @return [Hash{Symbol => String, nil}] The Gemini response <META>.
+      # @example
+      #   { status: '20', meta: 'text/gemini; charset=UTF-8',
+      #     mimetype: 'text/gemini', lang: 'en',
+      #     charset: 'utf-8', format: nil }
       attr_reader :header
 
       # The Gemini response main content as a string.
       attr_writer :body
 
       # The URI related to this response as an URI object.
+      # @return [::URI]
       attr_accessor :uri
 
-      # @return [Array<Hash>]
-      #   * :uri [URI::Generic] The link URI
-      #   * :label [String, nil] The link label
       # All links found on a Gemini response of MIME text/gemini
+      #
+      # Each link is a Hash with the keys `:uri` containing the link {::URI},
+      # and `:label` containing the link label as a {::String}, or nil if none
+      # was provided.
+      #
+      # @return [Array<Hash{:uri => ::URI; :label => String, nil}>]
       attr_reader :links
 
-      # @return [Array<Hash>]
-      #   * :meta [String] The meta information
-      #   * :content [String] The preformatted content
       # All pre-formatted blocks found on a Gemini response of MIME text/gemini
+      #
+      # Each block is a Hash with the keys `:content` containing the block
+      # content as a {::String}, and `:meta` containing the block metadata
+      # as a {::String}, or nil if no metadata was given.
+      #
+      # @return [Array<Hash{:content => String; :meta => String, nil}>]
       attr_reader :preformatted_blocks
 
       def initialize(status = nil, meta = nil)
@@ -58,10 +71,16 @@ module Net
         @socket = nil
       end
 
+      # Whether the current {Response} has a body of interest
+      #   (i.e. is not an error or a redirection).
+      # @return [Boolean]
       def body_permitted?
         @status && @status[0] == '2'
       end
 
+      # Set the socket to read data through {#read_body}.
+      # @param sock [OpenSSL::SSL::SSLSocket]
+      # @return [self]
       def reading_body(sock)
         return self unless body_permitted?
 
@@ -69,6 +88,10 @@ module Net
         self
       end
 
+      # Read data from the SSL socket.
+      # @yield [self]
+      # @return [String, nil] The data read from the socket
+      #   (aka. the Response body)
       def read_body(&)
         return @body unless @socket
 

@@ -6,7 +6,7 @@ require_relative 'response'
 require_relative '../text/generic'
 
 module Net
-  module Gemini # :nodoc:
+  module Gemini
     # An example client to fetch resources hosted on Gemini network.
     class Client
       attr_writer :certs_path
@@ -75,6 +75,11 @@ module Net
       end
     end
 
+    # @param host_or_uri [String, ::URI]
+    # @param port [Integer, nil]
+    # @yield [self]
+    # @return [self] Returns self with no block given
+    # @return [Object] Returns the result of the block, if given
     def self.start(host_or_uri, port = nil, &block)
       if host_or_uri.is_a? URI::Gemini
         host = host_or_uri.host
@@ -88,10 +93,15 @@ module Net
       yield client
     end
 
+    # @param uri [::URI]
+    # @yield [Response]
+    # @return [Response]
     def self.get_response(uri, &)
       start(uri.host, uri.port) { |client| client.fetch(uri, &) }
     end
 
+    # @param string_or_uri [String, ::URI]
+    # @return [String]
     def self.get(string_or_uri)
       uri = Net::Text::Generic.build_uri string_or_uri, URI::Gemini
       get_response(uri).body
