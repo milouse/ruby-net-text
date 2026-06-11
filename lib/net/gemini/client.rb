@@ -5,9 +5,8 @@ require_relative 'request'
 require_relative 'response'
 require_relative '../text/generic'
 
-# rubocop:disable Style/Documentation
 module Net
-  module Gemini
+  module Gemini # :nodoc:
     # An example client to fetch resources hosted on Gemini network.
     class Client
       attr_writer :certs_path
@@ -29,13 +28,11 @@ module Net
       end
 
       def request(uri, &block)
-        r = request! uri
-        if block_given?
-          block&.call r
-        else
-          r.read_body
-        end
-        r
+        response = request! uri
+        yield response if block
+        # In any case, read it once
+        response.read_body
+        response
       rescue OpenSSL::SSL::SSLError => e
         msg = format(
           'SSLError: %<cause>s',
@@ -48,19 +45,19 @@ module Net
         finish
       end
 
-      def fetch(uri, limit = 5, &block)
+      def fetch(uri, limit = 5, &)
         raise Error, 'Too many Gemini redirects' if limit.zero?
 
-        r = request(uri, &block)
-        return r unless r.status[0] == '3'
+        response = request(uri, &)
+        return response unless response.status[0] == '3'
 
         begin
-          uri = handle_redirect(r)
+          uri = handle_redirect response
         rescue ArgumentError, URI::InvalidURIError
-          return r
+          return response
         end
         warn "Redirect to #{uri}" if $VERBOSE
-        fetch(uri, limit - 1, &block)
+        fetch(uri, limit - 1, &)
       end
 
       private
@@ -85,14 +82,14 @@ module Net
       else
         host = host_or_uri
       end
-      gem = Client.new(host, port)
-      return gem unless block
+      client = Client.new(host, port)
+      return client unless block
 
-      yield gem
+      yield client
     end
 
-    def self.get_response(uri, &block)
-      start(uri.host, uri.port) { |gem| gem.fetch(uri, &block) }
+    def self.get_response(uri, &)
+      start(uri.host, uri.port) { |client| client.fetch(uri, &) }
     end
 
     def self.get(string_or_uri)
@@ -101,6 +98,5 @@ module Net
     end
   end
 end
-# rubocop:enable Style/Documentation
 
 require_relative 'client/ssl'

@@ -66,24 +66,13 @@ module Net
         return self unless body_permitted?
 
         @socket = sock
-
         self
       end
 
-      def read_body(&block)
+      def read_body(&)
         return @body unless @socket
 
-        if block_given?
-          while chunk = @socket.read(4096)
-            block.call chunk
-          end
-          # When a block given, this class doesn't care about the response body
-          return nil
-        end
-
-        raw_body = []
-        @socket.each_line { raw_body << _1 }
-        @body = encode_body(raw_body.join)
+        @body = read_chunked(&)
         return @body unless @header[:mimetype] == 'text/gemini'
 
         parse_body
@@ -98,11 +87,7 @@ module Net
       #   reflowed. Default is -1, which means "do not reflow".
       # @return [String] the body content
       def body(reflow_at: -1)
-        if @body.nil?
-          return '' if @socket.nil? # Maybe not ready nor already #read_body called
-
-          read_body
-        end
+        return '' if @body.nil? # Maybe not ready?
 
         unless reflow_at.is_a? Integer
           raise(
@@ -131,18 +116,27 @@ module Net
 
       private
 
-      def encode_body(body)
-        return body unless @header[:mimetype].start_with?('text/')
-
-        if @header[:charset] && @header[:charset] != 'utf-8'
-          # If body use another charset than utf-8, we need first to
-          # declare the raw byte string as using this chasret
-          body.force_encoding(@header[:charset])
-          # Then we can safely try to convert it to utf-8
-          return body.encode('utf-8')
+      def read_chunked(&block)
+        raw_body = ''
+        is_text = @header[:mimetype].start_with?('text/')
+        while (chunk = @socket.read(4096))
+          chunk = fix_encoding chunk if is_text
+          yield chunk if block
+          raw_body += chunk
         end
-        # Just declare that the body uses utf-8
-        body.force_encoding('utf-8')
+        raw_body
+      end
+
+      def fix_encoding(data)
+        if @header[:charset] && @header[:charset] != 'utf-8'
+          # If data use another charset than utf-8, we need first to
+          # declare the raw byte string as using this chasret
+          data.force_encoding(@header[:charset])
+          # Then we can safely try to convert it to utf-8
+          return data.encode('utf-8')
+        end
+        # Just declare that the data uses utf-8
+        data.force_encoding('utf-8')
       end
     end
   end

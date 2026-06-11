@@ -40,6 +40,13 @@ Metrics/ModuleLength:
     - heredoc
     - method_call
 
+RSpec/ExampleLength:
+  CountAsOne:
+    - array
+    - hash
+    - heredoc
+    - method_call
+
 Style/Alias:
   EnforcedStyle: prefer_alias_method
 

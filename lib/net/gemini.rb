@@ -60,37 +60,39 @@ module Net
   #   puts res.body if res.body_permitted?
   #   puts res.body(reflow_at: 85)
   #
-  # When the response is `text/gemini` mimetype, the body is parsed automatically
-  # unless you call {Response#read_body} with a block.
-  # You can then access links and preformatted blocks found in the body.
+  # When the response is `text/gemini` mimetype, the body is parsed
+  # automatically. You can then access links and preformatted blocks found in
+  # the body.
   #
-  #   res.links # => [{ :uri => #<URI::Gemini gemini://...>, :label => "..." }, ...]
-  #   res.preformatted_blocks # => [{ :meta => "...", :content => "..." }, ...]
+  #   res.links # => [{ :uri => #<URI::Gemini gemini://…>, :label => "…" }, …]
+  #   res.preformatted_blocks # => [{ :meta => "…", :content => "…" }, …]
   #
   # ==== Large Response
   #
-  # You may not want to load the whole body of a large response such as
-  # images, videos, etc. into memory.
-  # You can read response body as chunks.
+  # You may not want to load the whole body of a large response such as images,
+  # videos, etc. into memory. To avoid that, you can read response body as
+  # chunks.
   #
-  #   File.open 'image.png', 'wb' do |f|
-  #     Net::Gemini.get_response(URI('gemini://exmaple.org/image.png')) do |res|
-  #       res.read_body do |chunk|
-  #         f.write chunk
-  #       end
-  #     end
+  #   f = File.new 'image.png', 'wb'
+  #   Net::Gemini.get_response(URI('gemini://example.org/image.png')) do |res|
+  #     res.read_body { |chunk| f.write chunk }
   #   end
+  #   f.close
   #
-  # You can parse the response body using {Text::GmiParser} when the mimetype is 'text/gemini',
-  # though the body is not parsed automatically when {Response#read_body} is called with a block.
+  # It has to be noted that the block given to the {Gemini::get_response} method
+  # is executed while the socket is being read. This means the
+  # {Response} instance you get as block argument does not have parsed
+  # its body in case of a `text/gemini` mimetype, and thus its {Response#links}
+  # and {Response#preformatted_blocks} arrays will be empty. In any case,
+  # {Gemini::get_response} returns the {Response} instance, thus if you need
+  # access to these arrays, you must do this:
   #
-  #   if res.meta == 'text/gemini'
-  #     body = File.read('path/to/saved/body')
-  #     parser = Net::Text::GmiParser.new(base_uri: 'gemini://...')
-  #     parser.parse(body)
-  #     parser.links # => [{ :uri => #<URI::Gemini gemini://...>, :label => "..." }, ...]
-  #     parser.preformatted_blocks # => [{ :meta => "...", :content => "..." }, ...]
+  #   uri = URI('gemini://example.org/very_long_text.gmi')
+  #   res = Net::Gemini.get_response(uri) do |res|
+  #     # … do something
   #   end
+  #   res.links # => [{ :uri => #<URI::Gemini gemini://…>, :label => "…" }, …]
+  #   res.preformatted_blocks # => [{ :meta => "…", :content => "…" }, …]
   #
   # === Following Redirection
   #
@@ -112,6 +114,12 @@ module Net
   #   puts "#{res.status} - #{res.meta}" # => '20 - text/gemini;'
   #   puts res.uri.to_s                  # => 'gemini://exemple.com/final/dest'
   #
+  # This fetch method is automatically called by the class methods {Client::get}
+  # and {Client::get_response}.
+  #
+  #   res = Net::Gemini.get_response(URI('gemini://exemple.com/redirect'))
+  #   puts "#{res.status} - #{res.meta}" # => '20 - text/gemini;'
+  #   puts res.uri.to_s                  # => 'gemini://exemple.com/final/dest'
   module Gemini; end
 end
 
