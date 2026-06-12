@@ -51,15 +51,6 @@ module Net
       # @return [Array<Hash{:uri => ::URI; :label => String, nil}>]
       attr_reader :links
 
-      # All pre-formatted blocks found on a Gemini response of MIME text/gemini
-      #
-      # Each block is a Hash with the keys `:content` containing the block
-      # content as a {::String}, and `:meta` containing the block metadata
-      # as a {::String}, or nil if no metadata was given.
-      #
-      # @return [Array<Hash{:content => String; :meta => String, nil}>]
-      attr_reader :preformatted_blocks
-
       def initialize(status = nil, meta = nil)
         @status = status
         @meta = meta
@@ -67,7 +58,6 @@ module Net
         @uri = nil
         @body = nil
         @links = []
-        @preformatted_blocks = []
         @socket = nil
       end
 

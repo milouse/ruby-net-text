@@ -60,11 +60,9 @@ module Net
   #   puts res.body(reflow_at: 85)
   #
   # When the response is `text/gemini` mimetype, the body is parsed
-  # automatically. You can then access links and preformatted blocks found in
-  # the body.
+  # automatically to extract all its links.
   #
   #   res.links # => [{ :uri => #<URI::Gemini gemini://…>, :label => "…" }, …]
-  #   res.preformatted_blocks # => [{ :meta => "…", :content => "…" }, …]
   #
   # ==== Large Response
   #
@@ -81,17 +79,15 @@ module Net
   # It has to be noted that the block given to the {::get_response} method is
   # executed while the socket is being read. This means the {Response} instance
   # you get as block argument does not have parsed its body in case of
-  # a `text/gemini` mimetype, and thus its {Response#links} and
-  # {Response#preformatted_blocks} arrays will be empty. In any case,
-  # {::get_response} returns the {Response} instance, thus if you need access to
-  # these arrays, you must do this:
+  # a `text/gemini` mimetype, and thus its {Response#links} array will be
+  # empty. In any case, {::get_response} returns the {Response} instance, thus
+  # if you need access to these links, you must do this:
   #
   #   uri = URI('gemini://example.org/very_long_text.gmi')
   #   res = Net::Gemini.get_response(uri) do |res|
   #     # … do something
   #   end
   #   res.links # => [{ :uri => #<URI::Gemini gemini://…>, :label => "…" }, …]
-  #   res.preformatted_blocks # => [{ :meta => "…", :content => "…" }, …]
   #
   # === Following Redirection
   #

@@ -32,17 +32,6 @@ module Net
         header.merge received_mime(raw_meta)
       end
 
-      def parse_preformatted_block(line, buf)
-        cur_block = { meta: line[3..].chomp, content: '' }
-        while (line = buf.gets)
-          if line.start_with?('```')
-            @preformatted_blocks << cur_block
-            break
-          end
-          cur_block[:content] += line
-        end
-      end
-
       def parse_link(line)
         m = line.strip.match(/\A=>\s*([^\s]+)(?:\s*(.+))?\z/)
         return if m.nil?
@@ -58,12 +47,16 @@ module Net
 
       def parse_body
         buf = StringIO.new(@body)
+        mono_block_open = false
         while (line = buf.gets)
-          if line.start_with?('```')
-            parse_preformatted_block(line, buf)
-          elsif line.start_with?('=>')
-            parse_link(line)
-          end
+          mono_block_open = !mono_block_open if line.start_with?('```')
+
+          # Do not parse links inside preformatted block
+          next if mono_block_open
+
+          next unless line.start_with?('=>')
+
+          parse_link(line)
         end
       end
     end

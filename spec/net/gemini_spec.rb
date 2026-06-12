@@ -22,21 +22,13 @@ describe Net::Gemini do
   #   expect(res.meta).to be_nil
   # end
 
-  it 'parses links and pre-formatted blocks', :aggregate_failures do
+  it 'parses body links', :aggregate_failures do
     res = described_class.get_response URI('gemini://geminiprotocol.net/docs/gemtext-specification.gmi')
     expect(res.links.length).to eq 2
     expect(res.links.first).to(
       eq(
         { uri: URI('https://creativecommons.org/publicdomain/zero/1.0/'),
           label: 'Creative Commons CC0 1.0 Universal Public Domain Dedication' }
-      )
-    )
-    expect(res.preformatted_blocks.length).to eq 3
-    expect(res.preformatted_blocks.first).to(
-      eq(
-        { meta: '',
-          content: '=>[<whitespace>]<URL>[<whitespace>' \
-                   "<USER-FRIENDLY LINK NAME>]\n" }
       )
     )
   end
