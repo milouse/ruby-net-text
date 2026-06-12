@@ -9,7 +9,7 @@ module URI # :nodoc:
   #
   # @see https://tools.ietf.org/html/rfc1288#section-2.3
   #
-  class Finger < HTTP
+  class Finger < Generic
     # A Default port of 79 for URI::Finger.
     DEFAULT_PORT = 79
 

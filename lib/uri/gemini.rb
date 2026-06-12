@@ -9,7 +9,7 @@ module URI # :nodoc:
   #
   # @see https://geminiprotocol.net/docs/protocol-specification.html
   #
-  class Gemini < HTTP
+  class Gemini < Generic
     # A Default port of 1965 for URI::Gemini.
     DEFAULT_PORT = 1965
 

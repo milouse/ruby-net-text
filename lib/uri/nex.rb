@@ -9,7 +9,7 @@ module URI # :nodoc:
   #
   # @see nex://nightfall.city/nex/info/specification.txt
   #
-  class Nex < HTTP
+  class Nex < Generic
     # A Default port of 1900 for URI::Nex.
     DEFAULT_PORT = 1900
 
