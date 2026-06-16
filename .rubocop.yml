@@ -3,18 +3,42 @@ AllCops:
   NewCops: enable
   TargetRubyVersion: 3.3
 
-require:
+plugins:
   - rubocop-performance
   - rubocop-rspec
 
-Layout:
-  Severity: warning
-
 Layout/LineLength:
   Max: 80
+  AllowedPatterns:
+    - gemini://
 
-Metrics:
-  Severity: warning
+Metrics/BlockLength:
+  CountAsOne:
+    - array
+    - hash
+    - heredoc
+    - method_call
+
+Metrics/ClassLength:
+  CountAsOne:
+    - array
+    - hash
+    - heredoc
+    - method_call
+
+Metrics/MethodLength:
+  CountAsOne:
+    - array
+    - hash
+    - heredoc
+    - method_call
+
+Metrics/ModuleLength:
+  CountAsOne:
+    - array
+    - hash
+    - heredoc
+    - method_call
 
 Style/Alias:
   EnforcedStyle: prefer_alias_method

@@ -22,16 +22,20 @@ module Net
           return [line]
         end
 
+        reflow_regular_line(line, length)
+      end
+
+      def self.reflow_regular_line(line, length)
         output = []
         prefix = reflow_line_prefix(line)
         limit_chars = ['-', '­', ' '].freeze
         while line.length > length
-          cut_line = line[0...length]
-          cut_index = limit_chars.map { cut_line.rindex(_1) || -1 }.max
+          # Detect first possible cut
+          cut_index = limit_chars.map { line[0...length].rindex(_1) || -1 }.max
           break if cut_index.zero? # Better do nothing for now
 
           output << line[0...cut_index]
-          line = prefix + line[cut_index + 1..]
+          line = prefix + line[(cut_index + 1)..]
         end
         output << line
       end
