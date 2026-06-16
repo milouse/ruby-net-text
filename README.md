@@ -1,9 +1,6 @@
 # Finger, Gemini, Gopher and Nex support for Net::* and URI::*
 
-[![Support using Liberapay](https://img.shields.io/badge/Liberapay-Support_me-yellow?logo=liberapay)](https://liberapay.com/milouse/donate)
-[![Support using Flattr](https://img.shields.io/badge/Flattr-Support_me-brightgreen?logo=flattr)](https://flattr.com/@milouse)
 [![Support using Paypal](https://img.shields.io/badge/Paypal-Support_me-00457C?logo=paypal&labelColor=lightgray)](https://paypal.me/milouse)
-
 [![Gem](https://img.shields.io/gem/v/ruby-net-text)](https://rubygems.org/gems/ruby-net-text)
 [![Documentation](https://img.shields.io/badge/Documentation-ruby--net--text-CC342D?logo=rubygems)](https://www.rubydoc.info/gems/ruby-net-text/)
 
