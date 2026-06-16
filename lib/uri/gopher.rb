@@ -9,7 +9,7 @@ module URI # :nodoc:
   #
   # @see https://www.rfc-editor.org/rfc/rfc4266.html
   #
-  class Gopher < HTTP
+  class Gopher < Generic
     # A Default port of 70 for URI::Gopher.
     DEFAULT_PORT = 70
 

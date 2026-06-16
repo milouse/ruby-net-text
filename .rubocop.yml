@@ -1,26 +1,61 @@
 ---
 AllCops:
   NewCops: enable
-  TargetRubyVersion: 2.7
+  TargetRubyVersion: 3.3
 
-require:
+plugins:
   - rubocop-performance
   - rubocop-rspec
 
-Layout:
-  Severity: warning
-
 Layout/LineLength:
   Max: 80
+  AllowedPatterns:
+    - gemini://
 
-Metrics:
-  Severity: warning
+Metrics/BlockLength:
+  CountAsOne:
+    - array
+    - hash
+    - heredoc
+    - method_call
+
+Metrics/ClassLength:
+  CountAsOne:
+    - array
+    - hash
+    - heredoc
+    - method_call
+
+Metrics/MethodLength:
+  CountAsOne:
+    - array
+    - hash
+    - heredoc
+    - method_call
+
+Metrics/ModuleLength:
+  CountAsOne:
+    - array
+    - hash
+    - heredoc
+    - method_call
+
+RSpec/ExampleLength:
+  CountAsOne:
+    - array
+    - hash
+    - heredoc
+    - method_call
 
 Style/Alias:
   EnforcedStyle: prefer_alias_method
 
 Style/ConditionalAssignment:
   EnforcedStyle: assign_inside_condition
+
+Style/Documentation:
+  Exclude:
+    - lib/net/gemini/client.rb
 
 Style/PreferredHashMethods:
   EnforcedStyle: verbose

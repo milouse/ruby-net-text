@@ -16,36 +16,43 @@ module Net
         ' ' * m[1].length
       end
 
-      def self.reflow_text_line(line, mono_block_open, length)
-        line.strip!
-        if mono_block_open || line.start_with?('=>') || line.length < length
-          return [line]
-        end
-
+      def self.reflow_line(line, length)
         output = []
         prefix = reflow_line_prefix(line)
         limit_chars = ['-', '­', ' '].freeze
         while line.length > length
-          cut_line = line[0...length]
-          cut_index = limit_chars.map { cut_line.rindex(_1) || -1 }.max
+          # Detect first possible cut
+          cut_index = limit_chars.map { line[0...length].rindex(_1) || -1 }.max
           break if cut_index.zero? # Better do nothing for now
 
           output << line[0...cut_index]
-          line = prefix + line[cut_index + 1..]
+          line = prefix + line[(cut_index + 1)..]
         end
         output << line
+      end
+
+      def self.parse_line(line, mono_block_open, length)
+        if line.start_with?('```')
+          mono_block_open = !mono_block_open
+          return [mono_block_open, [line.chomp]]
+        end
+
+        return [mono_block_open, [line.chomp]] if mono_block_open
+
+        line.strip!
+        if line.start_with?('=>') || line.length < length
+          return [mono_block_open, [line]]
+        end
+
+        [mono_block_open, reflow_line(line, length)]
       end
 
       def self.format_body(body, length)
         new_body = []
         mono_block_open = false
         body.each_line do |line|
-          if line.start_with?('```')
-            mono_block_open = !mono_block_open
-            # Don't include code block toggle lines
-            next
-          end
-          new_body += reflow_text_line(line, mono_block_open, length)
+          mono_block_open, content = parse_line line, mono_block_open, length
+          new_body += content
         end
         new_body.join("\n")
       end

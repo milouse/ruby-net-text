@@ -19,24 +19,36 @@ module Net
     #
     class Response
       # @return [String] The Gemini response <STATUS> string.
-      # @example '20'
+      # @example
+      #   "20"
       attr_reader :status
 
       # @return [String] The Gemini response <META> message sent by the server.
-      # @example 'text/gemini'
+      # @example
+      #   "text/gemini"
       attr_reader :meta
 
-      # @return [Hash] The Gemini response <META>.
+      # @return [Hash{Symbol => String, nil}] The Gemini response <META>.
+      # @example
+      #   { status: '20', meta: 'text/gemini; charset=UTF-8',
+      #     mimetype: 'text/gemini', lang: 'en',
+      #     charset: 'utf-8', format: nil }
       attr_reader :header
 
       # The Gemini response main content as a string.
       attr_writer :body
 
       # The URI related to this response as an URI object.
+      # @return [::URI]
       attr_accessor :uri
 
-      # @return [Array<String>] All links found on a Gemini response of MIME
-      #   text/gemini
+      # All links found on a Gemini response of MIME text/gemini
+      #
+      # Each link is a Hash with the keys `:uri` containing the link {::URI},
+      # and `:label` containing the link label as a {::String}, or nil if none
+      # was provided.
+      #
+      # @return [Array<Hash{:uri => ::URI; :label => String, nil}>]
       attr_reader :links
 
       def initialize(status = nil, meta = nil)
@@ -46,23 +58,40 @@ module Net
         @uri = nil
         @body = nil
         @links = []
-        @preformatted_blocks = []
+        @socket = nil
       end
 
+      # Whether the current {Response} has a body of interest
+      #   (i.e. is not an error or a redirection).
+      # @return [Boolean]
       def body_permitted?
         @status && @status[0] == '2'
       end
 
+      # Set the socket to read data through {#read_body}.
+      # @param sock [OpenSSL::SSL::SSLSocket]
+      # @return [self]
       def reading_body(sock)
         return self unless body_permitted?
 
-        raw_body = []
-        sock.each_line { raw_body << _1 }
-        @body = encode_body(raw_body.join)
-        return self unless @header[:mimetype] == 'text/gemini'
+        @socket = sock
+        self
+      end
+
+      # Read data from the SSL socket.
+      # @yield [self]
+      # @return [String, nil] The data read from the socket
+      #   (aka. the Response body)
+      def read_body(&)
+        return @body unless @socket
+
+        @body = read_chunked(&)
+        return @body unless @header[:mimetype] == 'text/gemini'
 
         parse_body
-        self
+        @body
+      ensure
+        @socket = nil
       end
 
       # Return the response body (i.e. the requested document content).
@@ -100,18 +129,27 @@ module Net
 
       private
 
-      def encode_body(body)
-        return body unless @header[:mimetype].start_with?('text/')
-
-        if @header[:charset] && @header[:charset] != 'utf-8'
-          # If body use another charset than utf-8, we need first to
-          # declare the raw byte string as using this chasret
-          body.force_encoding(@header[:charset])
-          # Then we can safely try to convert it to utf-8
-          return body.encode('utf-8')
+      def read_chunked(&block)
+        raw_body = ''
+        is_text = @header[:mimetype].start_with?('text/')
+        while (chunk = @socket.read(4096))
+          chunk = fix_encoding chunk if is_text
+          yield chunk if block
+          raw_body += chunk
         end
-        # Just declare that the body uses utf-8
-        body.force_encoding('utf-8')
+        raw_body
+      end
+
+      def fix_encoding(data)
+        if @header[:charset] && @header[:charset] != 'utf-8'
+          # If data use another charset than utf-8, we need first to
+          # declare the raw byte string as using this chasret
+          data.force_encoding(@header[:charset])
+          # Then we can safely try to convert it to utf-8
+          return data.encode('utf-8')
+        end
+        # Just declare that the data uses utf-8
+        data.force_encoding('utf-8')
       end
     end
   end

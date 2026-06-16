@@ -15,7 +15,27 @@ describe Net::Gemini do
       raise_error(ArgumentError, 'uri is not a String, nor an URI::Gemini')
   end
 
-  it 'does not raise with empty metadata' do
-    expect { described_class.get 'gemini://tilde.pink' }.not_to raise_error
+  # TODO: Actually test against an URI with no metadata (no status?)
+  # it 'does not raise with empty metadata', :aggregate_failures do
+  #   expect { described_class.get 'gemini://tilde.pink' }.not_to raise_error
+  #   res = described_class.get_response URI('gemini://tilde.pink')
+  #   expect(res.meta).to be_nil
+  # end
+
+  it 'parses body links', :aggregate_failures do
+    res = described_class.get_response URI('gemini://geminiprotocol.net/docs/gemtext-specification.gmi')
+    expect(res.links.length).to eq 2
+    expect(res.links.first).to(
+      eq(
+        { uri: URI('https://creativecommons.org/publicdomain/zero/1.0/'),
+          label: 'Creative Commons CC0 1.0 Universal Public Domain Dedication' }
+      )
+    )
+  end
+
+  it 'yields response chunks' do
+    described_class.get_response(URI('gemini://geminiprotocol.net/docs/specification.gmi')) do |res|
+      expect { |block| res.read_body(&block) }.to yield_control.at_least(1)
+    end
   end
 end

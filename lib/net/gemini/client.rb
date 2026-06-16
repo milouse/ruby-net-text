@@ -6,7 +6,7 @@ require_relative 'response'
 require_relative '../text/generic'
 
 module Net
-  module Gemini # rubocop:disable Style/Documentation
+  module Gemini
     # An example client to fetch resources hosted on Gemini network.
     class Client
       attr_writer :certs_path
@@ -27,8 +27,12 @@ module Net
         res.reading_body(@ssl_socket)
       end
 
-      def request(uri)
-        request! uri
+      def request(uri, &block)
+        response = request! uri
+        yield response if block
+        # In any case, read it once
+        response.read_body
+        response
       rescue OpenSSL::SSL::SSLError => e
         msg = format(
           'SSLError: %<cause>s',
@@ -41,19 +45,19 @@ module Net
         finish
       end
 
-      def fetch(uri, limit = 5)
+      def fetch(uri, limit = 5, &)
         raise Error, 'Too many Gemini redirects' if limit.zero?
 
-        r = request(uri)
-        return r unless r.status[0] == '3'
+        response = request(uri, &)
+        return response unless response.status[0] == '3'
 
         begin
-          uri = handle_redirect(r)
+          uri = handle_redirect response
         rescue ArgumentError, URI::InvalidURIError
-          return r
+          return response
         end
         warn "Redirect to #{uri}" if $VERBOSE
-        fetch(uri, limit - 1)
+        fetch(uri, limit - 1, &)
       end
 
       private
@@ -71,6 +75,11 @@ module Net
       end
     end
 
+    # @param host_or_uri [String, ::URI]
+    # @param port [Integer, nil]
+    # @yield [self]
+    # @return [self] Returns self with no block given
+    # @return [Object] Returns the result of the block, if given
     def self.start(host_or_uri, port = nil, &block)
       if host_or_uri.is_a? URI::Gemini
         host = host_or_uri.host
@@ -78,16 +87,21 @@ module Net
       else
         host = host_or_uri
       end
-      gem = Client.new(host, port)
-      return gem unless block
+      client = Client.new(host, port)
+      return client unless block
 
-      yield gem
+      yield client
     end
 
-    def self.get_response(uri)
-      start(uri.host, uri.port) { |gem| gem.fetch(uri) }
+    # @param uri [::URI]
+    # @yield [Response]
+    # @return [Response]
+    def self.get_response(uri, &)
+      start(uri.host, uri.port) { |client| client.fetch(uri, &) }
     end
 
+    # @param string_or_uri [String, ::URI]
+    # @return [String]
     def self.get(string_or_uri)
       uri = Net::Text::Generic.build_uri string_or_uri, URI::Gemini
       get_response(uri).body
